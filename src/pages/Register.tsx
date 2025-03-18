@@ -14,52 +14,12 @@ const fadeIn = {
   visible: { opacity: 1, y: 0 }
 };
 
-// Função para verificar se já existe um registro com o mesmo e-mail ou CPF
-const checkDuplicateRegistration = async (email: string, cpf: string): Promise<{ isDuplicate: boolean, field?: string }> => {
-  try {
-    // Verificar email duplicado
-    const { data: emailCheck, error: emailError } = await supabase
-      .from('subscriptions')
-      .select('email')
-      .eq('email', email)
-      .limit(1);
-      
-    if (emailError) throw emailError;
-    
-    if (emailCheck && emailCheck.length > 0) {
-      return { isDuplicate: true, field: 'email' };
-    }
-    
-    // Verificar CPF duplicado
-    const { data: cpfCheck, error: cpfError } = await supabase
-      .from('subscriptions')
-      .select('cpf')
-      .eq('cpf', cpf)
-      .limit(1);
-      
-    if (cpfError) throw cpfError;
-    
-    if (cpfCheck && cpfCheck.length > 0) {
-      return { isDuplicate: true, field: 'CPF' };
-    }
-    
-    return { isDuplicate: false };
-  } catch (error) {
-    console.error('Erro ao verificar duplicidade:', error);
-    throw error;
-  }
-};
-
 // Função real para salvar a inscrição no Supabase
 const submitSubscription = async (subscription: Omit<Subscription, 'id' | 'createdAt' | 'isPaid'>): Promise<Subscription> => {
   try {
     console.log('Tentando salvar inscrição:', subscription);
     
-    // Verificar duplicidade antes de inserir
-    const duplicateCheck = await checkDuplicateRegistration(subscription.email, subscription.cpf);
-    if (duplicateCheck.isDuplicate) {
-      throw new Error(`Este ${duplicateCheck.field} já está registrado em nosso sistema.`);
-    }
+    // Não verificamos mais duplicidade, permitindo múltiplas inscrições
     
     // Verificar quais colunas estão disponíveis na tabela
     const { data: columns, error: columnsError } = await supabase
@@ -182,8 +142,6 @@ const Register = () => {
       
       if (error.code === '42P01') {
         toast.error('Erro: Tabela de inscrições não encontrada. Por favor, contate o suporte.');
-      } else if (error.code === '23505') {
-        toast.error('Este e-mail ou CPF já está registrado.');
       } else if (error.code === 'PGRST301') {
         toast.error('Erro de conexão com o banco de dados. Tente novamente mais tarde.');
       }
