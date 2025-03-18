@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { Check, X, Search, ArrowUp, ArrowDown } from 'lucide-react';
+import { Check, X, Search, ArrowUp, ArrowDown, Trash2, AlertCircle } from 'lucide-react';
 import { toast } from 'sonner';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/lib/supabase';
@@ -128,6 +128,45 @@ const updatePaymentStatus = async (id: string, isPaid: boolean) => {
   }
 };
 
+const deleteSubscription = async (id: string) => {
+  try {
+    console.log('Tentando remover inscrição:', id);
+    
+    // Verifica se a inscrição existe antes de excluir
+    const { data: existingSubscription, error: fetchError } = await supabase
+      .from('subscriptions')
+      .select()
+      .eq('id', id)
+      .single();
+
+    if (fetchError) {
+      console.error('Erro ao buscar inscrição:', fetchError);
+      throw new Error(`Erro ao buscar inscrição: ${fetchError.message}`);
+    }
+
+    if (!existingSubscription) {
+      throw new Error('Inscrição não encontrada');
+    }
+
+    // Remove a inscrição
+    const { error: deleteError } = await supabase
+      .from('subscriptions')
+      .delete()
+      .eq('id', id);
+
+    if (deleteError) {
+      console.error('Erro ao remover inscrição:', deleteError);
+      throw new Error(`Erro ao remover inscrição: ${deleteError.message}`);
+    }
+
+    console.log('Inscrição removida com sucesso:', id);
+    return true;
+  } catch (error) {
+    console.error('Erro ao remover inscrição:', error);
+    throw error;
+  }
+};
+
 const AdminSubscriptions = () => {
   const navigate = useNavigate();
   const { user, isLoading: isAuthLoading } = useAuth();
@@ -186,6 +225,29 @@ const AdminSubscriptions = () => {
         toast.error(error.message);
       } else {
         toast.error('Ocorreu um erro ao atualizar o status de pagamento');
+      }
+    }
+  };
+  
+  const handleDelete = async (id: string) => {
+    if (!confirm('Tem certeza que deseja remover esta inscrição? Esta ação não pode ser desfeita.')) {
+      return;
+    }
+    
+    try {
+      console.log('Iniciando remoção de inscrição:', id);
+      await deleteSubscription(id);
+      
+      // Força uma atualização imediata dos dados
+      await refetch();
+      
+      toast.success('Inscrição removida com sucesso');
+    } catch (error) {
+      console.error('Erro ao remover inscrição:', error);
+      if (error instanceof Error) {
+        toast.error(error.message);
+      } else {
+        toast.error('Ocorreu um erro ao remover a inscrição');
       }
     }
   };
@@ -358,22 +420,32 @@ const AdminSubscriptions = () => {
                           </td>
                           <td className="px-4 py-3">{formatDate(subscription.created_at)}</td>
                           <td className="px-4 py-3 text-right">
-                            {subscription.is_paid ? (
+                            <div className="flex justify-end space-x-2">
+                              {subscription.is_paid ? (
+                                <Button 
+                                  variant="outline" 
+                                  size="sm"
+                                  onClick={() => handlePaymentStatus(subscription.id, false)}
+                                >
+                                  Marcar como não pago
+                                </Button>
+                              ) : (
+                                <Button 
+                                  size="sm"
+                                  onClick={() => handlePaymentStatus(subscription.id, true)}
+                                >
+                                  Confirmar pagamento
+                                </Button>
+                              )}
+                              
                               <Button 
-                                variant="outline" 
+                                variant="destructive" 
                                 size="sm"
-                                onClick={() => handlePaymentStatus(subscription.id, false)}
+                                onClick={() => handleDelete(subscription.id)}
                               >
-                                Marcar como não pago
+                                <Trash2 className="h-4 w-4" />
                               </Button>
-                            ) : (
-                              <Button 
-                                size="sm"
-                                onClick={() => handlePaymentStatus(subscription.id, true)}
-                              >
-                                Confirmar pagamento
-                              </Button>
-                            )}
+                            </div>
                           </td>
                         </tr>
                       ))}

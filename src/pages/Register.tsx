@@ -121,7 +121,10 @@ const Register = () => {
       
       // Redirecionar para a plataforma de pagamento após 1.5 segundos
       setTimeout(() => {
-        window.location.href = 'https://know-horse.pay.yampi.com.br/r/SX0MH1RNJ5';
+        const paymentUrl = 'https://know-horse.pay.yampi.com.br/r/SX0MH1RNJ5';
+        if (window.location.href !== paymentUrl) {
+          window.location.href = paymentUrl;
+        }
       }, 1500);
       
       // Reset form
