@@ -1,4 +1,3 @@
-
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Bar, BarChart, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer } from 'recharts';
@@ -217,7 +216,7 @@ const Dashboard = () => {
                 <Button className="w-full justify-between" variant="outline" onClick={() => navigate('/admin/subscriptions')}>
                   Ver Inscrições <ArrowRight className="h-4 w-4" />
                 </Button>
-                <Button className="w-full justify-between" variant="outline">
+                <Button className="w-full justify-between" variant="outline" onClick={() => navigate('/admin/reports')}>
                   Relatórios <ArrowRight className="h-4 w-4" />
                 </Button>
                 <Button className="w-full justify-between" variant="outline">
