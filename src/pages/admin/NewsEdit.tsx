@@ -12,8 +12,28 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { supabase } from '@/lib/supabase';
 import { News } from '@/types';
+
+// Enum para tamanhos de imagem
+enum ImageSize {
+  SMALL = 'small',
+  MEDIUM = 'medium',
+  FULL = 'full'
+}
+
+const imageSizeClasses = {
+  [ImageSize.SMALL]: 'w-1/3',
+  [ImageSize.MEDIUM]: 'w-2/3',
+  [ImageSize.FULL]: 'w-full'
+};
+
+const imageSizeLabels = {
+  [ImageSize.SMALL]: 'Pequena (1/3)',
+  [ImageSize.MEDIUM]: 'Média (2/3)',
+  [ImageSize.FULL]: 'Grande (Total)'
+};
 
 const AdminNewsEdit = () => {
   const navigate = useNavigate();
@@ -27,6 +47,7 @@ const AdminNewsEdit = () => {
     content: '',
     image_url: '',
     video_url: '',
+    image_size: ImageSize.FULL,
     is_published: false
   });
   const [uploadType, setUploadType] = useState<'image' | 'video'>('image');
@@ -69,6 +90,7 @@ const AdminNewsEdit = () => {
           content: data.content,
           image_url: data.image_url || '',
           video_url: data.video_url || '',
+          image_size: data.image_size || ImageSize.FULL,
           is_published: data.is_published
         });
 
@@ -103,14 +125,13 @@ const AdminNewsEdit = () => {
     setFormData(prev => ({ ...prev, is_published: checked }));
   };
 
+  const handleImageSizeChange = (value: ImageSize) => {
+    setFormData(prev => ({ ...prev, image_size: value }));
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.title || !formData.content) {
-      toast.error('Título e conteúdo são obrigatórios');
-      return;
-    }
-
     setIsSubmitting(true);
 
     try {
@@ -144,6 +165,7 @@ const AdminNewsEdit = () => {
           summary: formData.summary,
           image_url: imageUrl,
           video_url: videoUrl,
+          image_size: formData.image_size,
           is_published: formData.is_published,
           published_at: formData.is_published ? new Date().toISOString() : null,
           updated_at: new Date().toISOString()
@@ -228,14 +250,13 @@ const AdminNewsEdit = () => {
 
               <CardContent className="space-y-6">
                 <div className="space-y-2">
-                  <Label htmlFor="title">Título *</Label>
+                  <Label htmlFor="title">Título</Label>
                   <Input
                     id="title"
                     name="title"
                     value={formData.title}
                     onChange={handleInputChange}
                     placeholder="Digite o título da notícia"
-                    required
                   />
                 </div>
 
@@ -251,7 +272,7 @@ const AdminNewsEdit = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="content">Conteúdo *</Label>
+                  <Label htmlFor="content">Conteúdo</Label>
                   <Textarea
                     id="content"
                     name="content"
@@ -259,7 +280,6 @@ const AdminNewsEdit = () => {
                     onChange={handleInputChange}
                     placeholder="Digite o conteúdo completo da notícia"
                     rows={10}
-                    required
                   />
                 </div>
 
@@ -280,19 +300,34 @@ const AdminNewsEdit = () => {
                           onChange={handleInputChange}
                           placeholder="https://exemplo.com/imagem.jpg"
                         />
+                        <div className="space-y-2">
+                          <Label htmlFor="image_size">Tamanho da Imagem</Label>
+                          <Select
+                            value={formData.image_size}
+                            onValueChange={(value) => handleImageSizeChange(value as ImageSize)}
+                          >
+                            <SelectTrigger>
+                              <SelectValue placeholder="Selecione o tamanho da imagem" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {Object.values(ImageSize).map((size) => (
+                                <SelectItem key={size} value={size}>
+                                  {imageSizeLabels[size]}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
                         <p className="text-sm text-muted-foreground">
                           Por favor, use uma URL externa de imagem (ex: Imgur, Cloudinary, etc.)
                         </p>
                         {formData.image_url && (
-                          <div className="relative aspect-video w-full overflow-hidden rounded-md mb-4">
+                          <div className={`relative ${imageSizeClasses[formData.image_size]} mx-auto overflow-hidden rounded-md`}>
                             <img
                               src={formData.image_url}
-                              alt="Imagem atual"
-                              className="h-full w-full object-cover"
+                              alt="Preview"
+                              className="w-full h-auto"
                             />
-                            <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
-                              <p className="text-white text-sm font-medium">Imagem atual</p>
-                            </div>
                           </div>
                         )}
                       </div>

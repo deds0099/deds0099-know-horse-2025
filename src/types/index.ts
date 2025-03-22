@@ -11,6 +11,7 @@ export interface News {
   summary?: string | null;
   image_url?: string | null;
   video_url?: string | null;
+  image_size?: 'small' | 'medium' | 'full' | null;
   published_at: string | null;
   is_published: boolean;
   created_at: string;

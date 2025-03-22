@@ -13,6 +13,7 @@ import AdminNews from "./pages/admin/News";
 import AdminNewsCreate from "./pages/admin/NewsCreate";
 import AdminNewsEdit from "./pages/admin/NewsEdit";
 import AdminSubscriptions from "./pages/admin/Subscriptions";
+import AdminReports from "./pages/admin/Reports";
 import { AuthProvider } from "./context/AuthContext";
 
 // Create a new client
@@ -37,6 +38,7 @@ function App() {
                 <Route path="/admin/news/new" element={<AdminNewsCreate />} />
                 <Route path="/admin/news/edit/:id" element={<AdminNewsEdit />} />
                 <Route path="/admin/subscriptions" element={<AdminSubscriptions />} />
+                <Route path="/admin/reports" element={<AdminReports />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </BrowserRouter>

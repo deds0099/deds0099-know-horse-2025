@@ -9,6 +9,19 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { supabase } from '@/lib/supabase';
 import { News } from '@/types';
 
+// Enum para tamanhos de imagem
+enum ImageSize {
+  SMALL = 'small',
+  MEDIUM = 'medium',
+  FULL = 'full'
+}
+
+const imageSizeClasses = {
+  [ImageSize.SMALL]: 'w-1/3',
+  [ImageSize.MEDIUM]: 'w-2/3',
+  [ImageSize.FULL]: 'w-full'
+};
+
 const NewsList = () => {
   const [news, setNews] = useState<News[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -111,20 +124,20 @@ const NewsList = () => {
               {filteredNews.map((item) => (
                 <Card key={item.id} className="overflow-hidden">
                   {item.image_url && (
-                    <div className="relative h-48 w-full">
+                    <div className={`relative mx-auto ${imageSizeClasses[item.image_size as ImageSize || ImageSize.FULL]}`}>
                       <img
                         src={item.image_url}
                         alt={item.title}
-                        className="absolute inset-0 w-full h-full object-cover"
+                        className="w-full h-auto"
                       />
                     </div>
                   )}
                   {item.video_url && (
-                    <div className="relative w-full aspect-video">
+                    <div className="relative w-full">
                       <video 
                         src={item.video_url} 
                         controls 
-                        className="w-full h-full object-cover"
+                        className="w-full h-auto"
                         poster={item.image_url || undefined}
                       >
                         Seu navegador não suporta a tag de vídeo.

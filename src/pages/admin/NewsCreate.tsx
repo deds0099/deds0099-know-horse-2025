@@ -12,7 +12,27 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { supabase } from '@/lib/supabase';
+
+// Enum para tamanhos de imagem
+enum ImageSize {
+  SMALL = 'small',
+  MEDIUM = 'medium',
+  FULL = 'full'
+}
+
+const imageSizeClasses = {
+  [ImageSize.SMALL]: 'w-1/3',
+  [ImageSize.MEDIUM]: 'w-2/3',
+  [ImageSize.FULL]: 'w-full'
+};
+
+const imageSizeLabels = {
+  [ImageSize.SMALL]: 'Pequena (1/3)',
+  [ImageSize.MEDIUM]: 'Média (2/3)',
+  [ImageSize.FULL]: 'Grande (Total)'
+};
 
 const AdminNewsCreate = () => {
   const navigate = useNavigate();
@@ -24,6 +44,7 @@ const AdminNewsCreate = () => {
     content: '',
     image_url: '',
     video_url: '',
+    image_size: ImageSize.FULL,
     isPublished: false
   });
   const [uploadType, setUploadType] = useState<'image' | 'video'>('image');
@@ -45,14 +66,13 @@ const AdminNewsCreate = () => {
     setFormData(prev => ({ ...prev, isPublished: checked }));
   };
 
+  const handleImageSizeChange = (value: ImageSize) => {
+    setFormData(prev => ({ ...prev, image_size: value }));
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.title || !formData.content) {
-      toast.error('Título e conteúdo são obrigatórios');
-      return;
-    }
-
     setIsSubmitting(true);
 
     try {
@@ -70,6 +90,7 @@ const AdminNewsCreate = () => {
           summary: formData.summary,
           image_url: formData.image_url,
           video_url: formData.video_url,
+          image_size: formData.image_size,
           is_published: formData.isPublished,
           published_at: formData.isPublished ? new Date().toISOString() : null,
           created_at: new Date().toISOString(),
@@ -139,14 +160,13 @@ const AdminNewsCreate = () => {
 
               <CardContent className="space-y-6">
                 <div className="space-y-2">
-                  <Label htmlFor="title">Título *</Label>
+                  <Label htmlFor="title">Título</Label>
                   <Input
                     id="title"
                     name="title"
                     value={formData.title}
                     onChange={handleInputChange}
                     placeholder="Digite o título da notícia"
-                    required
                   />
                 </div>
 
@@ -162,7 +182,7 @@ const AdminNewsCreate = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="content">Conteúdo *</Label>
+                  <Label htmlFor="content">Conteúdo</Label>
                   <Textarea
                     id="content"
                     name="content"
@@ -170,7 +190,6 @@ const AdminNewsCreate = () => {
                     onChange={handleInputChange}
                     placeholder="Digite o conteúdo completo da notícia"
                     rows={10}
-                    required
                   />
                 </div>
 
@@ -191,15 +210,33 @@ const AdminNewsCreate = () => {
                           onChange={handleInputChange}
                           placeholder="https://exemplo.com/imagem.jpg"
                         />
+                        <div className="space-y-2">
+                          <Label htmlFor="image_size">Tamanho da Imagem</Label>
+                          <Select
+                            value={formData.image_size}
+                            onValueChange={(value) => handleImageSizeChange(value as ImageSize)}
+                          >
+                            <SelectTrigger>
+                              <SelectValue placeholder="Selecione o tamanho da imagem" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {Object.values(ImageSize).map((size) => (
+                                <SelectItem key={size} value={size}>
+                                  {imageSizeLabels[size]}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
                         <p className="text-sm text-muted-foreground">
                           Por favor, use uma URL externa de imagem (ex: Imgur, Cloudinary, etc.)
                         </p>
                         {formData.image_url && (
-                          <div className="relative aspect-video w-full overflow-hidden rounded-md">
+                          <div className={`relative ${imageSizeClasses[formData.image_size]} mx-auto overflow-hidden rounded-md`}>
                             <img
                               src={formData.image_url}
                               alt="Preview"
-                              className="h-full w-full object-cover"
+                              className="w-full h-auto"
                             />
                           </div>
                         )}
