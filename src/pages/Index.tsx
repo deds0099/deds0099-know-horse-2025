@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, MessageCircle } from 'lucide-react';
 import { CustomButton } from '@/components/ui/CustomButton';
 import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
@@ -48,17 +48,6 @@ const Index = () => {
               Conectando profissionais, entusiastas e especialistas no mundo equestre através de conhecimento e networking.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 pt-2 justify-center animate-slide-in" style={{ animationDelay: '200ms' }}>
-              <CustomButton asChild size="lg" glassEffect>
-                <Link to="/register">
-                  Inscreva-se Agora
-                  <ArrowRight className="ml-2 h-5 w-5" />
-                </Link>
-              </CustomButton>
-              <CustomButton asChild variant="outline" size="lg">
-                <Link to="/news">
-                  Notícias e Atualizações
-                </Link>
-              </CustomButton>
             </div>
             
             <div className="mt-10 max-w-4xl mx-auto">
@@ -84,6 +73,14 @@ const Index = () => {
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Link>
             </CustomButton>
+            <div className="mt-4 text-center text-muted-foreground">
+              <CustomButton asChild variant="outline" size="lg">
+                <a href="https://wa.me/message/XSIKMZI2ZAKME1" target="_blank" rel="noopener noreferrer">
+                  Contato via WhatsApp
+                </a>
+              </CustomButton>
+              <p className="text-sm mt-2">Em caso de problemas com a inscrição entre em contato pelo whatsapp</p>
+            </div>
           </div>
         </div>
         <div className="absolute bottom-0 left-0 w-full h-1/3 bg-gradient-to-t from-background to-transparent"></div>
