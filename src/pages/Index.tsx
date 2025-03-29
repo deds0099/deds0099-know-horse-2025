@@ -69,7 +69,7 @@ const Index = () => {
           <div className="max-w-3xl mx-auto text-center">
             <div className="mb-6 p-4 bg-primary/10 rounded-lg w-full animate-pulse">
               <p className="text-2xl font-bold text-primary">
-                Valor do 1º lote: <span className="text-3xl">R$ 200</span>
+                VALOR DO 1º LOTE: <span className="text-3xl">R$ 200</span>
               </p>
             </div>
             <CustomButton asChild size="lg" className="animate-pulse">

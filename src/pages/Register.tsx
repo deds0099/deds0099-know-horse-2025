@@ -169,7 +169,7 @@ const Register = () => {
             
             <div className="mb-8 p-6 bg-primary/10 rounded-lg text-center animate-pulse">
               <p className="text-2xl font-bold text-primary">
-                Valor do 1º lote: <span className="text-3xl">R$ 200</span>
+                VALOR DO 1º LOTE: <span className="text-3xl">R$ 200</span>
               </p>
             </div>
             
