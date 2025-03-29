@@ -167,6 +167,12 @@ const Register = () => {
               </p>
             </div>
             
+            <div className="mb-8 p-6 bg-primary/10 rounded-lg text-center animate-pulse">
+              <p className="text-2xl font-bold text-primary">
+                Valor do 1º lote: <span className="text-3xl">R$ 200</span>
+              </p>
+            </div>
+            
             {isSuccess ? (
               <div
                 className="text-center py-16"

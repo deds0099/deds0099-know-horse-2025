@@ -67,6 +67,11 @@ const Index = () => {
       <section className="py-20 md:py-32 bg-gradient-subtle from-background to-accent/30 relative">
         <div className="container mx-auto px-4 md:px-6 relative z-10">
           <div className="max-w-3xl mx-auto text-center">
+            <div className="mb-6 p-4 bg-primary/10 rounded-lg w-full animate-pulse">
+              <p className="text-2xl font-bold text-primary">
+                Valor do 1º lote: <span className="text-3xl">R$ 200</span>
+              </p>
+            </div>
             <CustomButton asChild size="lg" className="animate-pulse">
               <Link to="/register">
                 Inscreva-se Agora

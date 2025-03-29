@@ -141,6 +141,12 @@ const Dashboard = () => {
             </p>
           </div>
           
+          <div className="mb-8 p-6 bg-primary/10 rounded-lg text-center animate-pulse">
+            <p className="text-2xl font-bold text-primary">
+              Valor do 1º lote: <span className="text-3xl">R$ 200</span>
+            </p>
+          </div>
+          
           <div className="grid grid-cols-1 md:grid-cols-1 gap-6 mb-8">
             <Card className="backdrop-blur-sm bg-white/70 border border-white/20 transition-all duration-300">
               <CardHeader className="flex flex-row items-center justify-between pb-2">
