@@ -68,9 +68,28 @@ const Index = () => {
         <div className="container mx-auto px-4 md:px-6 relative z-10">
           <div className="max-w-3xl mx-auto text-center">
             <div className="mb-6 p-4 bg-primary/10 rounded-lg w-full animate-pulse">
-              <p className="text-2xl font-bold text-primary">
-                VALOR DO 1º LOTE: <span className="text-3xl">R$ 200</span>
-              </p>
+              <div className="space-y-2">
+                <p className="text-xl font-bold text-primary">
+                  04/03 - 04/04
+                </p>
+                <p className="text-2xl font-bold text-primary">
+                  1º LOTE: R$ 200,00
+                </p>
+                <div className="h-px bg-primary/20 my-3"></div>
+                <p className="text-xl font-bold text-primary">
+                  05/04 - 20/04
+                </p>
+                <p className="text-2xl font-bold text-primary">
+                  2º LOTE: R$ 250,00
+                </p>
+                <div className="h-px bg-primary/20 my-3"></div>
+                <p className="text-xl font-bold text-primary">
+                  21/04 - 08/05
+                </p>
+                <p className="text-2xl font-bold text-primary">
+                  3º LOTE: R$ 300,00
+                </p>
+              </div>
             </div>
             <CustomButton asChild size="lg" className="animate-pulse">
               <Link to="/register">

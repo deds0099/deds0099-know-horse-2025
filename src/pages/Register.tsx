@@ -168,9 +168,28 @@ const Register = () => {
             </div>
             
             <div className="mb-8 p-6 bg-primary/10 rounded-lg text-center animate-pulse">
-              <p className="text-2xl font-bold text-primary">
-                VALOR DO 1º LOTE: <span className="text-3xl">R$ 200</span>
-              </p>
+              <div className="space-y-2">
+                <p className="text-xl font-bold text-primary">
+                  04/03 - 04/04
+                </p>
+                <p className="text-2xl font-bold text-primary">
+                  1º LOTE: R$ 200,00
+                </p>
+                <div className="h-px bg-primary/20 my-3"></div>
+                <p className="text-xl font-bold text-primary">
+                  05/04 - 20/04
+                </p>
+                <p className="text-2xl font-bold text-primary">
+                  2º LOTE: R$ 250,00
+                </p>
+                <div className="h-px bg-primary/20 my-3"></div>
+                <p className="text-xl font-bold text-primary">
+                  21/04 - 08/05
+                </p>
+                <p className="text-2xl font-bold text-primary">
+                  3º LOTE: R$ 300,00
+                </p>
+              </div>
             </div>
             
             {isSuccess ? (
