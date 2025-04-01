@@ -87,7 +87,7 @@ const updatePaymentStatus = async (id: string, isPaid: boolean) => {
     
     const updates = {
       is_paid: isPaid,
-      status: isPaid ? 'paid' : 'pending',
+      status: isPaid ? 'active' : 'pending',
       paid_at: isPaid ? new Date().toISOString() : null
     };
 

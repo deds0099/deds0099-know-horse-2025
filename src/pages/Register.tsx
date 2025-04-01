@@ -115,15 +115,34 @@ const Register = () => {
       const result = await submitSubscription(formData);
       console.log('Inscrição criada com sucesso:', result);
       
+      // Criar preferência de pagamento no Mercado Pago
+      const response = await fetch('/api/create-payment', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          subscriptionId: result.id,
+          amount: 200, // Valor do lote atual
+          email: formData.email,
+          name: formData.name
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Erro ao criar preferência de pagamento');
+      }
+
+      const { initPoint } = await response.json();
+      
       // Show success message
       toast.success('Inscrição realizada com sucesso!');
       setIsSuccess(true);
       
-      // Redirecionar para a plataforma de pagamento após 1.5 segundos
+      // Redirecionar para a página de pagamento do Mercado Pago
       setTimeout(() => {
-        const paymentUrl = 'https://know-horse.pay.yampi.com.br/r/SX0MH1RNJ5';
-        if (window.location.href !== paymentUrl) {
-          window.location.href = paymentUrl;
+        if (window.location.href !== initPoint) {
+          window.location.href = initPoint;
         }
       }, 1500);
       
@@ -136,7 +155,7 @@ const Register = () => {
         institution: '',
         status: 'pending'
       });
-    } catch (error: any) {
+    } catch (error) {
       console.error('Erro detalhado ao submeter inscrição:', error);
       
       // Mensagem de erro mais específica
