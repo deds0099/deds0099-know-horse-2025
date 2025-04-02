@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
@@ -10,6 +10,7 @@ export const Navbar: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
 
   // Handle scroll effect
   useEffect(() => {
@@ -46,6 +47,15 @@ export const Navbar: React.FC = () => {
       return adminLinks;
     }
     return navLinks;
+  };
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate('/');
+    } catch (error) {
+      console.error('Erro ao fazer logout:', error);
+    }
   };
 
   return (
@@ -90,7 +100,7 @@ export const Navbar: React.FC = () => {
             
             {isAuthenticated ? (
               <Button
-                onClick={() => logout()}
+                onClick={handleLogout}
                 variant="ghost"
                 className="ml-2"
               >
@@ -140,7 +150,7 @@ export const Navbar: React.FC = () => {
             
             {isAuthenticated ? (
               <Button
-                onClick={() => logout()}
+                onClick={handleLogout}
                 variant="secondary"
                 className="w-full mt-4 animate-slide-in"
                 style={{ animationDelay: '200ms' }}
