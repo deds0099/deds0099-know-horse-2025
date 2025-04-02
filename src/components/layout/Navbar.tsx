@@ -4,6 +4,7 @@ import { Menu, X } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { toast } from 'sonner';
 
 export const Navbar: React.FC = () => {
   const { user, logout, isAuthenticated } = useAuth();
@@ -51,10 +52,27 @@ export const Navbar: React.FC = () => {
 
   const handleLogout = async () => {
     try {
+      console.log('Iniciando logout na Navbar...');
       await logout();
-      navigate('/');
+      console.log('Logout realizado com sucesso, redirecionando para página inicial');
+      
+      // Forçar um delay antes do redirecionamento para garantir que o estado seja atualizado
+      setTimeout(() => {
+        console.log('Executando redirecionamento para home');
+        navigate('/', { replace: true });
+        
+        // Forçar recarga da página para garantir um estado limpo
+        setTimeout(() => {
+          console.log('Forçando recarga da página');
+          window.location.href = '/';
+        }, 100);
+      }, 100);
     } catch (error) {
-      console.error('Erro ao fazer logout:', error);
+      console.error('Erro ao fazer logout na Navbar:', error);
+      toast?.error?.('Erro ao fazer logout. Tente recarregar a página.');
+      
+      // Mesmo com erro, tenta redirecionar
+      navigate('/', { replace: true });
     }
   };
 

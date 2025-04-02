@@ -101,13 +101,26 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setIsLoading(true);
     
     try {
+      console.log('Iniciando processo de logout...');
       const { error } = await supabase.auth.signOut();
+      
       if (error) {
+        console.error('Erro no signOut do Supabase:', error);
         throw error;
       }
+      
+      console.log('Supabase signOut bem-sucedido, limpando estado do usuário');
+      // Limpar explicitamente o estado do usuário
       setUser(null);
+      
+      // Forçar limpeza de qualquer armazenamento local que possa estar mantendo o estado
+      localStorage.removeItem('supabase.auth.token');
+      
+      console.log('Logout realizado com sucesso');
     } catch (error) {
-      console.error('Logout error:', error);
+      console.error('Erro completo durante logout:', error);
+      // Mesmo com erro, tentamos limpar o estado do usuário
+      setUser(null);
       throw error;
     } finally {
       setIsLoading(false);
