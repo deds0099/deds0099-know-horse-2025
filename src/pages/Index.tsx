@@ -98,11 +98,13 @@ const Index = () => {
               </Link>
             </CustomButton>
             <div className="mt-4 text-center text-muted-foreground">
-              <CustomButton asChild variant="outline" size="lg">
-                <a href="https://wa.me/message/XSIKMZI2ZAKME1" target="_blank" rel="noopener noreferrer">
-                  Contato via WhatsApp
-                </a>
-              </CustomButton>
+              <div className="flex flex-col md:flex-row gap-3 justify-center">
+                <CustomButton asChild variant="outline" size="lg">
+                  <a href="https://wa.me/message/XSIKMZI2ZAKME1" target="_blank" rel="noopener noreferrer">
+                    Contato via WhatsApp
+                  </a>
+                </CustomButton>
+              </div>
               <p className="text-sm mt-2">Em caso de problemas com a inscrição entre em contato pelo whatsapp</p>
             </div>
           </div>

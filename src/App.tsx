@@ -8,6 +8,7 @@ import NotFound from "./pages/NotFound";
 import NewsList from "./pages/News";
 import Register from "./pages/Register";
 import Login from "./pages/Login";
+import Submission from "./pages/Submission";
 import Dashboard from "./pages/admin/Dashboard";
 import AdminNews from "./pages/admin/News";
 import AdminNewsCreate from "./pages/admin/NewsCreate";
@@ -33,6 +34,7 @@ function App() {
                 <Route path="/news" element={<NewsList />} />
                 <Route path="/register" element={<Register />} />
                 <Route path="/login" element={<Login />} />
+                <Route path="/submission" element={<Submission />} />
                 <Route path="/admin/dashboard" element={<Dashboard />} />
                 <Route path="/admin/news" element={<AdminNews />} />
                 <Route path="/admin/news/new" element={<AdminNewsCreate />} />
