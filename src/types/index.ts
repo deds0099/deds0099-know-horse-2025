@@ -18,6 +18,17 @@ export interface News {
   updated_at: string | null;
 }
 
+export interface Schedule {
+  id: string;
+  title: string;
+  description: string;
+  image_url?: string | null;
+  is_published: boolean;
+  published_at: string | null;
+  created_at: string;
+  updated_at: string | null;
+}
+
 export type Subscription = {
   id: string;
   name: string;
