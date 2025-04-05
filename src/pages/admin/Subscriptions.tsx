@@ -254,11 +254,27 @@ const AdminSubscriptions = () => {
   
   // Filtrar e ordenar as inscrições
   const filteredSubscriptions = [...subscriptions]
-    .filter(sub => 
-      sub.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      sub.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      sub.phone.includes(searchTerm)
-    )
+    .filter(sub => {
+      // Filtrar por termo de busca
+      const matchesSearch = 
+        sub.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        sub.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        sub.phone.includes(searchTerm);
+      
+      if (!matchesSearch) return false;
+      
+      // Verificar se a inscrição deve ser exibida
+      // Inscrições pagas são sempre exibidas
+      if (sub.is_paid) return true;
+      
+      // Para inscrições não pagas, verificar se passaram 48 horas
+      const createdAt = new Date(sub.created_at);
+      const now = new Date();
+      const diffInHours = (now.getTime() - createdAt.getTime()) / (1000 * 60 * 60);
+      
+      // Exibir apenas se ainda não passou 48 horas
+      return diffInHours <= 48;
+    })
     .sort((a, b) => {
       const fieldA = a[sortBy];
       const fieldB = b[sortBy];
@@ -307,7 +323,7 @@ const AdminSubscriptions = () => {
             <div>
               <h1 className="text-4xl font-bold mb-2">Inscrições</h1>
               <p className="text-muted-foreground">
-                Gerencie as inscrições para o Congresso Equestre 2025
+                Inscrições pagas e inscrições recentes (últimas 48h) para o Congresso Equestre 2025
               </p>
             </div>
             <Button onClick={() => navigate('/admin/dashboard')} className="mt-4 md:mt-0">
@@ -320,6 +336,12 @@ const AdminSubscriptions = () => {
               <CardTitle>Lista de Inscrições</CardTitle>
               <CardDescription>
                 {filteredSubscriptions.length} inscrições encontradas
+                <div className="mt-2 flex items-center">
+                  <AlertCircle className="mr-2 h-4 w-4 text-amber-500" />
+                  <span className="text-xs text-muted-foreground">
+                    Inscrições não pagas são automaticamente ocultadas após 48 horas, mas permanecem no banco de dados.
+                  </span>
+                </div>
               </CardDescription>
             </CardHeader>
             <CardContent>

@@ -33,6 +33,7 @@ export const Navbar: React.FC = () => {
   const navLinks = [
     { name: 'Início', path: '/' },
     { name: 'Notícias', path: '/news' },
+    { name: 'Programação', path: '/schedule' },
     { name: 'Submissão', path: '/submission' },
     { name: 'Inscrição', path: '/register' }
   ];
@@ -40,6 +41,7 @@ export const Navbar: React.FC = () => {
   const adminLinks = [
     { name: 'Dashboard', path: '/admin/dashboard' },
     { name: 'Notícias', path: '/admin/news' },
+    { name: 'Programação', path: '/admin/schedule' },
     { name: 'Inscrições', path: '/admin/subscriptions' }
   ];
 
