@@ -222,28 +222,45 @@ const MinicourseRegistrations = () => {
     }
 
     try {
+      // Primeiro, buscar o minicurso para obter o número atual de vagas
+      const { data: minicourse, error: minicourseError } = await supabase
+        .from('minicourses')
+        .select('vacancies_left')
+        .eq('id', registration.minicourse_id)
+        .single();
+
+      if (minicourseError) {
+        console.error('Erro ao buscar minicurso:', minicourseError);
+        throw new Error(`Erro ao buscar minicurso: ${minicourseError.message}`);
+      }
+
+      if (!minicourse) {
+        throw new Error('Minicurso não encontrado');
+      }
+
       // Remover a inscrição
       const { error: deleteError } = await supabase
         .from('minicourse_registrations')
         .delete()
         .eq('id', registration.id);
 
-      if (deleteError) throw deleteError;
+      if (deleteError) {
+        console.error('Erro ao remover inscrição:', deleteError);
+        throw new Error(`Erro ao remover inscrição: ${deleteError.message}`);
+      }
 
-      // Sempre devolver a vaga ao minicurso quando uma inscrição é excluída
-      if (minicourse) {
-        const { error: updateError } = await supabase
-          .from('minicourses')
-          .update({ 
-            vacancies_left: minicourse.vacancies_left + 1,
-            updated_at: new Date().toISOString()
-          })
-          .eq('id', minicourse.id);
+      // Atualizar o número de vagas disponíveis
+      const { error: updateError } = await supabase
+        .from('minicourses')
+        .update({ 
+          vacancies_left: minicourse.vacancies_left + 1,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', registration.minicourse_id);
         
-        if (updateError) {
-          console.error('Erro ao atualizar vagas disponíveis:', updateError);
-          // Continuar mesmo com erro para não prejudicar a experiência do usuário
-        }
+      if (updateError) {
+        console.error('Erro ao atualizar vagas disponíveis:', updateError);
+        // Continuar mesmo com erro para não prejudicar a experiência do usuário
       }
 
       toast.success('Inscrição excluída com sucesso');
