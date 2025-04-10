@@ -42,6 +42,44 @@ export type Subscription = {
   paidAt?: string;
 };
 
+export interface Minicourse {
+  id: string;
+  title: string;
+  description: string;
+  instructor: string;
+  instructor_photo_url?: string;
+  location: string;
+  date: string;
+  time: string;
+  vacancies: number;
+  vacancies_left: number;
+  type: string;
+  theme: string;
+  price: number;
+  image_url?: string | null;
+  is_published: boolean;
+  created_at: string;
+  updated_at: string;
+  published_at: string | null;
+}
+
+export interface MinicourseRegistration {
+  id: string;
+  minicourse_id: string;
+  name: string;
+  email: string;
+  cpf: string;
+  phone: string;
+  institution: string;
+  is_paid: boolean;
+  payment_id?: string;
+  payment_url?: string;
+  created_at: string;
+  updated_at: string;
+  paid_at: string | null;
+  minicourse?: Minicourse;
+}
+
 export interface AuthContextType {
   user: User | null;
   isLoading: boolean;

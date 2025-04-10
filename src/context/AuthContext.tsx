@@ -33,6 +33,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         }
 
         if (session?.user) {
+          // Simplificado: não buscar da tabela users, apenas usar dados do session
           setUser({
             id: session.user.id,
             email: session.user.email!,
@@ -51,6 +52,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     // Configurar listener para mudanças na autenticação
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (session?.user) {
+        // Simplificado: não buscar da tabela users, apenas usar dados do session
         setUser({
           id: session.user.id,
           email: session.user.email!,
@@ -82,6 +84,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       }
 
       if (data.user) {
+        // Simplificado: não buscar da tabela users, apenas usar dados do session
         setUser({
           id: data.user.id,
           email: data.user.email!,

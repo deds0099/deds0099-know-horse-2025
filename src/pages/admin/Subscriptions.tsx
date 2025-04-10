@@ -23,6 +23,9 @@ type Subscription = {
   paid_at: string | null;
   updated_at: string;
   cpf: string;
+  minicourse_id?: string;
+  minicourse_title?: string;
+  type?: 'subscription' | 'minicourse';
 };
 
 // Função para formatar a data
@@ -56,8 +59,8 @@ const fetchSubscriptions = async () => {
 
     console.log('Sessão válida, buscando inscrições...');
     
-    // Busca as inscrições
-    const { data, error } = await supabase
+    // Busca as inscrições regulares
+    const { data: regularSubscriptions, error } = await supabase
       .from('subscriptions')
       .select('*')
       .order('created_at', { ascending: false });
@@ -73,18 +76,131 @@ const fetchSubscriptions = async () => {
       }
     }
 
-    console.log('Inscrições encontradas:', data?.length || 0);
-    return data || [];
+    // Formatar inscrições regulares
+    const formattedRegularSubscriptions = (regularSubscriptions || []).map(sub => ({
+      ...sub,
+      type: 'subscription' as const
+    }));
+    
+    // Busca as inscrições de minicursos com join para obter o título
+    const { data: minicourseRegistrations, error: minicourseError } = await supabase
+      .from('minicourse_registrations')
+      .select(`
+        *,
+        minicourses:minicourse_id (
+          title
+        )
+      `)
+      .order('created_at', { ascending: false });
+      
+    if (minicourseError) {
+      console.error('Erro ao buscar inscrições de minicursos:', minicourseError);
+      throw new Error(`Erro ao buscar inscrições de minicursos: ${minicourseError.message}`);
+    }
+    
+    // Formatar inscrições de minicursos
+    const formattedMinicourseRegistrations = (minicourseRegistrations || []).map(reg => ({
+      id: reg.id,
+      name: reg.name,
+      email: reg.email,
+      phone: reg.phone || '',
+      institution: reg.institution || '',
+      status: reg.is_paid ? 'active' : 'pending',
+      is_paid: reg.is_paid,
+      created_at: reg.created_at,
+      paid_at: reg.paid_at,
+      updated_at: reg.updated_at,
+      cpf: reg.cpf,
+      minicourse_id: reg.minicourse_id,
+      minicourse_title: reg.minicourses?.title || 'Minicurso sem título',
+      type: 'minicourse' as const
+    }));
+    
+    // Combinar as inscrições e ordenar por data de criação
+    const allSubscriptions = [
+      ...formattedRegularSubscriptions,
+      ...formattedMinicourseRegistrations
+    ].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+    
+    console.log('Total de inscrições encontradas:', allSubscriptions.length);
+    return allSubscriptions;
   } catch (error) {
     console.error('Erro detalhado ao buscar inscrições:', error);
     throw error;
   }
 };
 
-const updatePaymentStatus = async (id: string, isPaid: boolean) => {
+const updatePaymentStatus = async (id: string, isPaid: boolean, type?: 'subscription' | 'minicourse') => {
   try {
-    console.log('Tentando atualizar status de pagamento:', { id, isPaid });
+    console.log('Tentando atualizar status de pagamento:', { id, isPaid, type });
     
+    if (type === 'minicourse') {
+      // Primeiro, buscar a inscrição para obter o minicourse_id
+      const { data: registration, error: fetchError } = await supabase
+        .from('minicourse_registrations')
+        .select('*, minicourse_id')
+        .eq('id', id)
+        .single();
+        
+      if (fetchError) {
+        console.error('Erro ao buscar inscrição de minicurso:', fetchError);
+        throw new Error(`Erro ao buscar inscrição: ${fetchError.message}`);
+      }
+      
+      if (!registration) {
+        throw new Error('Inscrição de minicurso não encontrada');
+      }
+      
+      const updates = {
+        is_paid: isPaid,
+        paid_at: isPaid ? new Date().toISOString() : null,
+        updated_at: new Date().toISOString()
+      };
+      
+      // Atualiza o status de pagamento
+      const { error: updateError } = await supabase
+        .from('minicourse_registrations')
+        .update(updates)
+        .eq('id', id);
+        
+      if (updateError) {
+        console.error('Erro ao atualizar status:', updateError);
+        throw new Error(`Erro ao atualizar status: ${updateError.message}`);
+      }
+      
+      // Se for marcado como pago, diminuir uma vaga
+      // Se for desmarcado como pago, aumentar uma vaga
+      if (registration.minicourse_id) {
+        // Primeiro buscar o minicurso para obter número atual de vagas
+        const { data: minicourse, error: minicourseError } = await supabase
+          .from('minicourses')
+          .select('vacancies_left')
+          .eq('id', registration.minicourse_id)
+          .single();
+          
+        if (minicourseError) {
+          console.error('Erro ao buscar minicurso:', minicourseError);
+          throw new Error(`Erro ao buscar minicurso: ${minicourseError.message}`);
+        }
+        
+        if (minicourse) {
+          const newVacanciesLeft = isPaid 
+            ? Math.max(0, minicourse.vacancies_left - 1)  // Não permitir número negativo
+            : minicourse.vacancies_left + 1;
+            
+          await supabase
+            .from('minicourses')
+            .update({ 
+              vacancies_left: newVacanciesLeft,
+              updated_at: new Date().toISOString()
+            })
+            .eq('id', registration.minicourse_id);
+        }
+      }
+      
+      return true;
+    } else {
+      // Lógica para inscrições regulares (mantém o código original)
     const updates = {
       is_paid: isPaid,
       status: isPaid ? 'active' : 'pending',
@@ -122,16 +238,73 @@ const updatePaymentStatus = async (id: string, isPaid: boolean) => {
 
     console.log('Atualização bem-sucedida para a inscrição:', id);
     return true;
+    }
   } catch (error) {
     console.error('Erro ao atualizar status:', error);
     throw error;
   }
 };
 
-const deleteSubscription = async (id: string) => {
+const deleteSubscription = async (id: string, type?: 'subscription' | 'minicourse') => {
   try {
-    console.log('Tentando remover inscrição:', id);
+    console.log('Tentando remover inscrição:', id, type);
     
+    if (type === 'minicourse') {
+      // Primeiro, buscar a inscrição para obter o minicourse_id
+      const { data: registration, error: fetchError } = await supabase
+        .from('minicourse_registrations')
+        .select('*, minicourse_id, is_paid')
+        .eq('id', id)
+        .single();
+        
+      if (fetchError) {
+        console.error('Erro ao buscar inscrição de minicurso:', fetchError);
+        throw new Error(`Erro ao buscar inscrição: ${fetchError.message}`);
+      }
+      
+      if (!registration) {
+        throw new Error('Inscrição de minicurso não encontrada');
+      }
+      
+      // Remove a inscrição
+      const { error: deleteError } = await supabase
+        .from('minicourse_registrations')
+        .delete()
+        .eq('id', id);
+        
+      if (deleteError) {
+        console.error('Erro ao remover inscrição:', deleteError);
+        throw new Error(`Erro ao remover inscrição: ${deleteError.message}`);
+      }
+      
+      // Se a inscrição estava paga, devolver a vaga
+      if (registration.is_paid && registration.minicourse_id) {
+        // Buscar o minicurso para obter número atual de vagas
+        const { data: minicourse, error: minicourseError } = await supabase
+          .from('minicourses')
+          .select('vacancies_left')
+          .eq('id', registration.minicourse_id)
+          .single();
+          
+        if (minicourseError) {
+          console.error('Erro ao buscar minicurso:', minicourseError);
+          throw new Error(`Erro ao buscar minicurso: ${minicourseError.message}`);
+        }
+        
+        if (minicourse) {
+          await supabase
+            .from('minicourses')
+            .update({ 
+              vacancies_left: minicourse.vacancies_left + 1,
+              updated_at: new Date().toISOString()
+            })
+            .eq('id', registration.minicourse_id);
+        }
+      }
+      
+      return true;
+    } else {
+      // Lógica para inscrições regulares (mantém o código original)
     // Verifica se a inscrição existe antes de excluir
     const { data: existingSubscription, error: fetchError } = await supabase
       .from('subscriptions')
@@ -161,6 +334,7 @@ const deleteSubscription = async (id: string) => {
 
     console.log('Inscrição removida com sucesso:', id);
     return true;
+    }
   } catch (error) {
     console.error('Erro ao remover inscrição:', error);
     throw error;
@@ -210,10 +384,10 @@ const AdminSubscriptions = () => {
     }
   };
   
-  const handlePaymentStatus = async (id: string, newStatus: boolean) => {
+  const handlePaymentStatus = async (id: string, newStatus: boolean, type?: 'subscription' | 'minicourse') => {
     try {
-      console.log('Iniciando atualização de status:', { id, newStatus });
-      await updatePaymentStatus(id, newStatus);
+      console.log('Iniciando atualização de status:', { id, newStatus, type });
+      await updatePaymentStatus(id, newStatus, type);
       
       // Força uma atualização imediata dos dados
       await refetch();
@@ -229,14 +403,14 @@ const AdminSubscriptions = () => {
     }
   };
   
-  const handleDelete = async (id: string) => {
+  const handleDelete = async (id: string, type?: 'subscription' | 'minicourse') => {
     if (!confirm('Tem certeza que deseja remover esta inscrição? Esta ação não pode ser desfeita.')) {
       return;
     }
     
     try {
-      console.log('Iniciando remoção de inscrição:', id);
-      await deleteSubscription(id);
+      console.log('Iniciando remoção de inscrição:', id, type);
+      await deleteSubscription(id, type);
       
       // Força uma atualização imediata dos dados
       await refetch();
@@ -257,8 +431,8 @@ const AdminSubscriptions = () => {
     .filter(sub => {
       // Filtrar por termo de busca
       const matchesSearch = 
-        sub.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        sub.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      sub.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      sub.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
         sub.phone.includes(searchTerm);
       
       if (!matchesSearch) return false;
@@ -368,104 +542,79 @@ const AdminSubscriptions = () => {
                 </div>
               ) : (
                 <div className="overflow-x-auto">
-                  <table className="w-full">
+                  <table className="w-full text-left border-collapse">
                     <thead>
                       <tr className="border-b">
-                        <th 
-                          className="px-4 py-3 text-left cursor-pointer hover:bg-accent/50"
-                          onClick={() => handleSort('name')}
-                        >
-                          <div className="flex items-center">
-                            Nome
-                            {sortBy === 'name' && (
-                              sortDirection === 'asc' ? <ArrowUp className="ml-1 h-4 w-4" /> : <ArrowDown className="ml-1 h-4 w-4" />
-                            )}
-                          </div>
+                        <th className="p-2 font-semibold" onClick={() => handleSort('name')}>
+                          Nome {sortBy === 'name' && (sortDirection === 'asc' ? <ArrowUp className="inline h-4 w-4" /> : <ArrowDown className="inline h-4 w-4" />)}
                         </th>
-                        <th 
-                          className="px-4 py-3 text-left cursor-pointer hover:bg-accent/50"
-                          onClick={() => handleSort('email')}
-                        >
-                          <div className="flex items-center">
-                            Email
-                            {sortBy === 'email' && (
-                              sortDirection === 'asc' ? <ArrowUp className="ml-1 h-4 w-4" /> : <ArrowDown className="ml-1 h-4 w-4" />
-                            )}
-                          </div>
+                        <th className="p-2 font-semibold">Email</th>
+                        <th className="p-2 font-semibold">CPF</th>
+                        <th className="p-2 font-semibold">Instituição</th>
+                        <th className="p-2 font-semibold">Tipo/Minicurso</th>
+                        <th className="p-2 font-semibold" onClick={() => handleSort('created_at')}>
+                          Data {sortBy === 'created_at' && (sortDirection === 'asc' ? <ArrowUp className="inline h-4 w-4" /> : <ArrowDown className="inline h-4 w-4" />)}
                         </th>
-                        <th className="px-4 py-3 text-left">Telefone</th>
-                        <th className="px-4 py-3 text-left">CPF</th>
-                        <th className="px-4 py-3 text-left">Instituição</th>
-                        <th 
-                          className="px-4 py-3 text-center cursor-pointer hover:bg-accent/50"
-                          onClick={() => handleSort('is_paid')}
-                        >
-                          <div className="flex items-center justify-center">
-                            Pago
-                            {sortBy === 'is_paid' && (
-                              sortDirection === 'asc' ? <ArrowUp className="ml-1 h-4 w-4" /> : <ArrowDown className="ml-1 h-4 w-4" />
-                            )}
-                          </div>
+                        <th className="p-2 font-semibold" onClick={() => handleSort('is_paid')}>
+                          Status {sortBy === 'is_paid' && (sortDirection === 'asc' ? <ArrowUp className="inline h-4 w-4" /> : <ArrowDown className="inline h-4 w-4" />)}
                         </th>
-                        <th 
-                          className="px-4 py-3 text-left cursor-pointer hover:bg-accent/50"
-                          onClick={() => handleSort('created_at')}
-                        >
-                          <div className="flex items-center">
-                            Data
-                            {sortBy === 'created_at' && (
-                              sortDirection === 'asc' ? <ArrowUp className="ml-1 h-4 w-4" /> : <ArrowDown className="ml-1 h-4 w-4" />
-                            )}
-                          </div>
-                        </th>
-                        <th className="px-4 py-3 text-right">Ações</th>
+                        <th className="p-2 font-semibold">Ações</th>
                       </tr>
                     </thead>
                     <tbody>
-                      {filteredSubscriptions.map((subscription) => (
-                        <tr key={subscription.id} className="border-b hover:bg-accent/50 transition-colors">
-                          <td className="px-4 py-3">{subscription.name}</td>
-                          <td className="px-4 py-3">{subscription.email}</td>
-                          <td className="px-4 py-3">{subscription.phone}</td>
-                          <td className="px-4 py-3">{subscription.cpf}</td>
-                          <td className="px-4 py-3">{subscription.institution}</td>
-                          <td className="px-4 py-3 text-center">
-                            {subscription.is_paid ? (
-                              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                <Check className="mr-1 h-3 w-3" /> Sim
+                      {filteredSubscriptions.map((item) => (
+                        <tr key={item.id} className="border-b hover:bg-muted/50">
+                          <td className="p-2 font-medium">{item.name}</td>
+                          <td className="p-2">{item.email}</td>
+                          <td className="p-2">{item.cpf}</td>
+                          <td className="p-2">{item.institution || '-'}</td>
+                          <td className="p-2">
+                            {item.type === 'minicourse' ? (
+                              <span className="inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-600/20">
+                                {item.minicourse_title}
                               </span>
                             ) : (
-                              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
-                                <X className="mr-1 h-3 w-3" /> Não
+                              <span className="inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">
+                                Inscrição Regular
                               </span>
                             )}
                           </td>
-                          <td className="px-4 py-3">{formatDate(subscription.created_at)}</td>
-                          <td className="px-4 py-3 text-right">
-                            <div className="flex justify-end space-x-2">
-                              {subscription.is_paid ? (
+                          <td className="p-2">{formatDate(item.created_at)}</td>
+                          <td className="p-2">
+                            {item.is_paid ? (
+                              <span className="inline-flex items-center text-green-600">
+                                <Check className="mr-1 h-4 w-4" /> Pago
+                                {item.paid_at && <span className="ml-1 text-xs">({formatDate(item.paid_at)})</span>}
+                              </span>
+                            ) : (
+                              <span className="inline-flex items-center text-amber-600">
+                                <AlertCircle className="mr-1 h-4 w-4" /> Pendente
+                              </span>
+                            )}
+                          </td>
+                          <td className="p-2">
+                            <div className="flex space-x-2">
                                 <Button 
                                   variant="outline" 
-                                  size="sm"
-                                  onClick={() => handlePaymentStatus(subscription.id, false)}
-                                >
-                                  Marcar como não pago
-                                </Button>
-                              ) : (
-                                <Button 
-                                  size="sm"
-                                  onClick={() => handlePaymentStatus(subscription.id, true)}
-                                >
-                                  Confirmar pagamento
-                                </Button>
-                              )}
-                              
-                              <Button 
-                                variant="destructive" 
-                                size="sm"
-                                onClick={() => handleDelete(subscription.id)}
+                                size="icon"
+                                className={`${item.is_paid ? 'hover:bg-red-50' : 'hover:bg-green-50'}`}
+                                onClick={() => handlePaymentStatus(item.id, !item.is_paid, item.type)}
+                                title={item.is_paid ? 'Marcar como não pago' : 'Marcar como pago'}
                               >
-                                <Trash2 className="h-4 w-4" />
+                                {item.is_paid ? (
+                                  <X className="h-4 w-4 text-red-500" />
+                                ) : (
+                                  <Check className="h-4 w-4 text-green-500" />
+                                )}
+                                </Button>
+                              <Button 
+                                variant="outline"
+                                size="icon"
+                                className="hover:bg-red-50"
+                                onClick={() => handleDelete(item.id, item.type)}
+                                title="Remover inscrição"
+                              >
+                                <Trash2 className="h-4 w-4 text-red-500" />
                               </Button>
                             </div>
                           </td>

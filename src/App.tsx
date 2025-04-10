@@ -19,6 +19,13 @@ import ScheduleForm from "./pages/admin/ScheduleForm";
 import AdminSubscriptions from "./pages/admin/Subscriptions";
 import AdminReports from "./pages/admin/Reports";
 import { AuthProvider } from "./context/AuthContext";
+// Importações para o sistema de minicursos
+import MinicourseList from "./pages/Minicourses";
+import MinicourseRegister from "./pages/MinicourseRegister";
+import MinicourseConfirmation from "./pages/MinicourseConfirmation";
+import AdminMinicourses from "./pages/admin/Minicourses";
+import MinicourseForm from "./pages/admin/MinicourseForm";
+import MinicourseRegistrations from "./pages/admin/MinicourseRegistrations";
 
 // Create a new client
 const queryClient = new QueryClient();
@@ -39,6 +46,13 @@ function App() {
                 <Route path="/login" element={<Login />} />
                 <Route path="/submission" element={<Submission />} />
                 <Route path="/schedule" element={<ScheduleList />} />
+                
+                {/* Rotas para Minicursos (Público) */}
+                <Route path="/minicourses" element={<MinicourseList />} />
+                <Route path="/minicourses/register/:id" element={<MinicourseRegister />} />
+                <Route path="/minicourses/confirmation/:id" element={<MinicourseConfirmation />} />
+                
+                {/* Rotas Admin */}
                 <Route path="/admin/dashboard" element={<Dashboard />} />
                 <Route path="/admin/news" element={<AdminNews />} />
                 <Route path="/admin/news/new" element={<AdminNewsCreate />} />
@@ -48,6 +62,13 @@ function App() {
                 <Route path="/admin/schedule/edit/:id" element={<ScheduleForm />} />
                 <Route path="/admin/subscriptions" element={<AdminSubscriptions />} />
                 <Route path="/admin/reports" element={<AdminReports />} />
+                
+                {/* Rotas para Minicursos (Admin) */}
+                <Route path="/admin/minicourses" element={<AdminMinicourses />} />
+                <Route path="/admin/minicourses/new" element={<MinicourseForm />} />
+                <Route path="/admin/minicourses/:id/edit" element={<MinicourseForm />} />
+                <Route path="/admin/minicourses/registrations/:id" element={<MinicourseRegistrations />} />
+                
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </BrowserRouter>
