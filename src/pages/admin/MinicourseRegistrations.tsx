@@ -230,7 +230,7 @@ const MinicourseRegistrations = () => {
 
       if (deleteError) throw deleteError;
 
-      // Sempre devolver uma vaga ao minicurso quando uma inscrição é excluída
+      // Sempre devolver a vaga ao minicurso quando uma inscrição é excluída
       if (minicourse) {
         const { error: updateError } = await supabase
           .from('minicourses')
