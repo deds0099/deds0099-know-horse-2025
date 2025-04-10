@@ -265,6 +265,22 @@ const deleteSubscription = async (id: string, type?: 'subscription' | 'minicours
       if (!registration) {
         throw new Error('Inscrição de minicurso não encontrada');
       }
+
+      // Buscar o minicurso para obter o número atual de vagas
+      const { data: minicourse, error: minicourseError } = await supabase
+        .from('minicourses')
+        .select('vacancies_left')
+        .eq('id', registration.minicourse_id)
+        .single();
+
+      if (minicourseError) {
+        console.error('Erro ao buscar minicurso:', minicourseError);
+        throw new Error(`Erro ao buscar minicurso: ${minicourseError.message}`);
+      }
+
+      if (!minicourse) {
+        throw new Error('Minicurso não encontrado');
+      }
       
       // Remove a inscrição
       const { error: deleteError } = await supabase
@@ -279,62 +295,34 @@ const deleteSubscription = async (id: string, type?: 'subscription' | 'minicours
       
       // Se a inscrição estava paga, devolver a vaga
       if (registration.is_paid && registration.minicourse_id) {
-        // Buscar o minicurso para obter número atual de vagas
-        const { data: minicourse, error: minicourseError } = await supabase
+        // Atualizar o número de vagas disponíveis
+        const { error: updateError } = await supabase
           .from('minicourses')
-          .select('vacancies_left')
-          .eq('id', registration.minicourse_id)
-          .single();
+          .update({ 
+            vacancies_left: minicourse.vacancies_left + 1,
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', registration.minicourse_id);
           
-        if (minicourseError) {
-          console.error('Erro ao buscar minicurso:', minicourseError);
-          throw new Error(`Erro ao buscar minicurso: ${minicourseError.message}`);
-        }
-        
-        if (minicourse) {
-          await supabase
-            .from('minicourses')
-            .update({ 
-              vacancies_left: minicourse.vacancies_left + 1,
-              updated_at: new Date().toISOString()
-            })
-            .eq('id', registration.minicourse_id);
+        if (updateError) {
+          console.error('Erro ao atualizar vagas disponíveis:', updateError);
+          throw new Error(`Erro ao atualizar vagas disponíveis: ${updateError.message}`);
         }
       }
-      
-      return true;
     } else {
-      // Lógica para inscrições regulares (mantém o código original)
-    // Verifica se a inscrição existe antes de excluir
-    const { data: existingSubscription, error: fetchError } = await supabase
-      .from('subscriptions')
-      .select()
-      .eq('id', id)
-      .single();
-
-    if (fetchError) {
-      console.error('Erro ao buscar inscrição:', fetchError);
-      throw new Error(`Erro ao buscar inscrição: ${fetchError.message}`);
+      // Remover inscrição regular
+      const { error } = await supabase
+        .from('subscriptions')
+        .delete()
+        .eq('id', id);
+        
+      if (error) {
+        console.error('Erro ao remover inscrição:', error);
+        throw new Error(`Erro ao remover inscrição: ${error.message}`);
+      }
     }
-
-    if (!existingSubscription) {
-      throw new Error('Inscrição não encontrada');
-    }
-
-    // Remove a inscrição
-    const { error: deleteError } = await supabase
-      .from('subscriptions')
-      .delete()
-      .eq('id', id);
-
-    if (deleteError) {
-      console.error('Erro ao remover inscrição:', deleteError);
-      throw new Error(`Erro ao remover inscrição: ${deleteError.message}`);
-    }
-
-    console.log('Inscrição removida com sucesso:', id);
+    
     return true;
-    }
   } catch (error) {
     console.error('Erro ao remover inscrição:', error);
     throw error;
