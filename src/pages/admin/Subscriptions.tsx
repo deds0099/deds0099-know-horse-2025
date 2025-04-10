@@ -284,17 +284,71 @@ const deleteSubscription = async (id: string, type?: 'subscription' | 'minicours
   }
 };
 
+const fetchData = async () => {
+  try {
+    const { data: subscriptions, error: subscriptionsError } = await supabase
+      .from('subscriptions')
+      .select(`
+        *,
+        minicourse_registrations (
+          id,
+          name,
+          email,
+          phone,
+          minicourse_id,
+          is_paid,
+          created_at,
+          minicourses (
+            id,
+            title,
+            instructor,
+            date,
+            time,
+            location,
+            vacancies_left
+          )
+        )
+      `)
+      .order('created_at', { ascending: false });
+
+    if (subscriptionsError) throw subscriptionsError;
+
+    // Processar os dados para exibição
+    const processedData = subscriptions.map(sub => {
+      if (sub.type === 'minicourse' && sub.minicourse_registrations) {
+        const registration = sub.minicourse_registrations[0];
+        return {
+          ...sub,
+          name: registration.name,
+          email: registration.email,
+          phone: registration.phone,
+          minicourse: registration.minicourses
+        };
+      }
+      return sub;
+    });
+
+    setData(processedData);
+  } catch (error) {
+    console.error('Erro ao buscar inscrições:', error);
+    toast.error('Erro ao carregar inscrições');
+  }
+};
+
 const AdminSubscriptions = () => {
   const navigate = useNavigate();
   const { user, isLoading: isAuthLoading } = useAuth();
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState<keyof Subscription>('created_at');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
+  const [data, setData] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   
   const { 
     data: subscriptions = [], 
     isLoading,
-    error,
+    error: queryError,
     refetch
   } = useQuery({
     queryKey: ['admin-subscriptions'],
@@ -304,11 +358,11 @@ const AdminSubscriptions = () => {
   });
   
   useEffect(() => {
-    if (error) {
+    if (queryError) {
       toast.error('Erro ao carregar inscrições');
-      console.error(error);
+      console.error(queryError);
     }
-  }, [error]);
+  }, [queryError]);
   
   // Redirect if not authenticated
   useEffect(() => {
@@ -327,22 +381,34 @@ const AdminSubscriptions = () => {
     }
   };
   
-  const handlePaymentStatus = async (id: string, newStatus: boolean, type?: 'subscription' | 'minicourse') => {
+  const handlePaymentStatusChange = async (id: string, isPaid: boolean) => {
     try {
-      console.log('Iniciando atualização de status:', { id, newStatus, type });
-      await updatePaymentStatus(id, newStatus, type);
-      
-      // Força uma atualização imediata dos dados
-      await refetch();
-      
-      toast.success('Status de pagamento atualizado com sucesso');
-    } catch (error) {
-      console.error('Erro ao atualizar pagamento:', error);
-      if (error instanceof Error) {
-        toast.error(error.message);
-      } else {
-        toast.error('Ocorreu um erro ao atualizar o status de pagamento');
-      }
+      // Buscar a inscrição atual
+      const { data: subscription, error: fetchError } = await supabase
+        .from('subscriptions')
+        .select('*')
+        .eq('id', id)
+        .single();
+
+      if (fetchError) throw fetchError;
+
+      // Atualizar apenas o status de pagamento
+      const { error: updateError } = await supabase
+        .from('subscriptions')
+        .update({ 
+          is_paid: isPaid,
+          paid_at: isPaid ? new Date().toISOString() : null,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', id);
+
+      if (updateError) throw updateError;
+
+      toast.success(`Status de pagamento atualizado com sucesso`);
+      fetchData(); // Atualizar dados
+    } catch (error: any) {
+      console.error('Erro ao atualizar status de pagamento:', error);
+      toast.error('Erro ao atualizar status de pagamento');
     }
   };
   
@@ -541,7 +607,7 @@ const AdminSubscriptions = () => {
                                   variant="outline" 
                                 size="icon"
                                 className={`${item.is_paid ? 'hover:bg-red-50' : 'hover:bg-green-50'}`}
-                                onClick={() => handlePaymentStatus(item.id, !item.is_paid, item.type)}
+                                onClick={() => handlePaymentStatusChange(item.id, !item.is_paid)}
                                 title={item.is_paid ? 'Marcar como não pago' : 'Marcar como pago'}
                               >
                                 {item.is_paid ? (
