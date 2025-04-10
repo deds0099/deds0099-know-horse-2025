@@ -81,6 +81,56 @@ const submitSubscription = async (subscription: Omit<Subscription, 'id' | 'creat
   }
 };
 
+const PriceTable = () => {
+  const prices = [
+    {
+      title: '1º Lote',
+      price: 350,
+      period: 'Até 10 de março',
+      description: 'Valor promocional para inscrições antecipadas'
+    },
+    {
+      title: '2º Lote',
+      price: 400,
+      period: '11 de março a 10 de abril',
+      description: 'Valor regular para inscrições'
+    },
+    {
+      title: '3º Lote',
+      price: 450,
+      period: '11 de abril a 10 de maio',
+      description: 'Valor para inscrições de última hora'
+    }
+  ];
+
+  return (
+    <div className="mb-8 p-6 bg-primary/10 rounded-lg text-center animate-pulse">
+      <div className="space-y-2">
+        <p className="text-xl font-bold text-primary">
+          04/03 - 10/04
+        </p>
+        <p className="text-2xl font-bold text-primary">
+          1º LOTE: R$ 200,00
+        </p>
+        <div className="h-px bg-primary/20 my-3"></div>
+        <p className="text-xl font-bold text-primary">
+          11/04 - 20/04
+        </p>
+        <p className="text-2xl font-bold text-primary">
+          2º LOTE: R$ 250,00
+        </p>
+        <div className="h-px bg-primary/20 my-3"></div>
+        <p className="text-xl font-bold text-primary">
+          21/04 - 08/05
+        </p>
+        <p className="text-2xl font-bold text-primary">
+          3º LOTE: R$ 300,00
+        </p>
+      </div>
+    </div>
+  );
+};
+
 const Register = () => {
   const [formData, setFormData] = useState({
     name: '',
@@ -164,30 +214,7 @@ const Register = () => {
               </p>
             </div>
             
-            <div className="mb-8 p-6 bg-primary/10 rounded-lg text-center animate-pulse">
-              <div className="space-y-2">
-                <p className="text-xl font-bold text-primary">
-                  04/03 - 04/04
-                </p>
-                <p className="text-2xl font-bold text-primary">
-                  1º LOTE: R$ 200,00
-                </p>
-                <div className="h-px bg-primary/20 my-3"></div>
-                <p className="text-xl font-bold text-primary">
-                  05/04 - 20/04
-                </p>
-                <p className="text-2xl font-bold text-primary">
-                  2º LOTE: R$ 250,00
-                </p>
-                <div className="h-px bg-primary/20 my-3"></div>
-                <p className="text-xl font-bold text-primary">
-                  21/04 - 08/05
-                </p>
-                <p className="text-2xl font-bold text-primary">
-                  3º LOTE: R$ 300,00
-                </p>
-              </div>
-            </div>
+            <PriceTable />
             
             {isSuccess ? (
               <div
