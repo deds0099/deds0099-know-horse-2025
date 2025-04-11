@@ -146,21 +146,21 @@ const Dashboard = () => {
           <div className="mb-8 p-6 bg-primary/10 rounded-lg text-center animate-pulse">
             <div className="space-y-2">
               <p className="text-xl font-bold text-primary">
-                04/03 - 04/04
+                04/03 - 13/04
               </p>
               <p className="text-2xl font-bold text-primary">
                 1º LOTE: R$ 200,00
               </p>
               <div className="h-px bg-primary/20 my-3"></div>
               <p className="text-xl font-bold text-primary">
-                05/04 - 20/04
+                14/04 - 30/04
               </p>
               <p className="text-2xl font-bold text-primary">
                 2º LOTE: R$ 250,00
               </p>
               <div className="h-px bg-primary/20 my-3"></div>
               <p className="text-xl font-bold text-primary">
-                21/04 - 08/05
+                01/05 - 08/05
               </p>
               <p className="text-2xl font-bold text-primary">
                 3º LOTE: R$ 300,00
