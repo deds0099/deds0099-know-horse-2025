@@ -47,6 +47,18 @@ const Submission = () => {
                       </a>
                     </CustomButton>
                     
+                    <CustomButton asChild size="lg" className="w-full">
+                      <a 
+                        href="https://drive.google.com/drive/folders/1l5ior7E3d95q_ft1KS50ILEynM45Cl7P?usp=drive_link" 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="flex items-center justify-center"
+                      >
+                        <Download className="mr-2 h-5 w-5" />
+                        Modelo para Submissão
+                      </a>
+                    </CustomButton>
+                    
                     <p className="text-sm text-muted-foreground pt-2">
                       Leia atentamente as regras antes de preparar seu resumo.
                     </p>
