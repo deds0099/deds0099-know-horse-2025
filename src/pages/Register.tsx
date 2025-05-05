@@ -119,13 +119,6 @@ const PriceTable = () => {
         <p className="text-2xl font-bold text-primary">
           2º LOTE: R$ 250,00
         </p>
-        <div className="h-px bg-primary/20 my-3"></div>
-        <p className="text-xl font-bold text-primary">
-          01/05 - 08/05
-        </p>
-        <p className="text-2xl font-bold text-primary">
-          3º LOTE: R$ 300,00
-        </p>
       </div>
     </div>
   );
