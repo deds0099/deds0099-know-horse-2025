@@ -21,6 +21,7 @@ const CARD_PRICE = 5;
 
 const MemberDashboard = () => {
     const { user, isAuthenticated, isLoading: authLoading } = useAuth();
+    const navigate = useNavigate();
     const queryClient = useQueryClient();
     const [searchParams] = useSearchParams();
     const [paymentDialogOpen, setPaymentDialogOpen] = useState(false);
