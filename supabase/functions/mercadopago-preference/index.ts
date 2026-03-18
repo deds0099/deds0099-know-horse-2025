@@ -26,7 +26,7 @@ serve(async (req) => {
             throw new Error('MERCADOPAGO_ACCESS_TOKEN não configurado no Supabase')
         }
 
-        const baseUrl = 'https://know-horse-2025.vercel.app'
+        const baseUrl = 'https://deds0099-know-horse-2025.vercel.app'
 
         const nameParts = (name || '').trim().split(' ');
         const firstName = nameParts[0] || 'Cliente';

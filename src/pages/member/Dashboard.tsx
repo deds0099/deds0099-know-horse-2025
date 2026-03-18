@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useSearchParams } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/lib/supabase';
 import { Navbar } from '@/components/layout/Navbar';
@@ -21,8 +21,8 @@ const CARD_PRICE = 5;
 
 const MemberDashboard = () => {
     const { user, isAuthenticated, isLoading: authLoading } = useAuth();
-    const navigate = useNavigate();
     const queryClient = useQueryClient();
+    const [searchParams] = useSearchParams();
     const [paymentDialogOpen, setPaymentDialogOpen] = useState(false);
     const [pendingPaymentItem, setPendingPaymentItem] = useState<{ id: string; title: string; price: number } | null>(null);
 
@@ -139,6 +139,24 @@ const MemberDashboard = () => {
             navigate('/login');
         }
     }, [isAuthenticated, authLoading, navigate]);
+
+    // Manipular retorno do pagamento
+    useEffect(() => {
+        const paymentStatus = searchParams.get('payment');
+        if (paymentStatus === 'success') {
+            toast.success('Pagamento processado com sucesso! Sua inscrição será atualizada em instantes.', {
+                duration: 6000
+            });
+            // Limpa o parâmetro da URL sem recarregar a página
+            navigate('/member/dashboard', { replace: true });
+        } else if (paymentStatus === 'failure') {
+            toast.error('O pagamento não foi concluído. Por favor, tente novamente ou escolha outro método.');
+            navigate('/member/dashboard', { replace: true });
+        } else if (paymentStatus === 'pending') {
+            toast.info('Seu pagamento está em processamento. Assim que for confirmado, sua inscrição será atualizada.');
+            navigate('/member/dashboard', { replace: true });
+        }
+    }, [searchParams, navigate]);
 
     const openPaymentDialog = (item: { id: string; title: string; price: number }) => {
         setPendingPaymentItem(item);
