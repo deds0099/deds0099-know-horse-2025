@@ -16,8 +16,8 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { openCheckout } from '@/lib/mercadopago';
 import { fetchPriceLots, getActiveLotFromList } from '@/config/priceLots';
 
-const PIX_PRICE = 5;
-const CARD_PRICE = 5;
+const PIX_PRICE = 200;
+const CARD_PRICE = 220;
 
 const MemberDashboard = () => {
     const { user, isAuthenticated, isLoading: authLoading } = useAuth();
@@ -87,7 +87,7 @@ const MemberDashboard = () => {
     });
 
     const activeLot = getActiveLotFromList(priceLots);
-    const price = activeLot ? 5 : 5; // Temporário para teste
+    const price = activeLot ? 200 : 200; // Valor padrão se não houver lote
 
     // 4. Efeito para Realtime - Atualiza a UI instantaneamente quando o Admin muda o status
     useEffect(() => {

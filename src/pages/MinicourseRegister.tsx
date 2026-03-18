@@ -517,7 +517,7 @@ const MinicourseRegister = () => {
                                 {paymentMethod === 'pix' && <div className="h-2 w-2 rounded-full bg-primary" />}
                               </div>
                             </div>
-                            <div className="text-xl font-bold text-primary">R$ 5,00</div>
+                            <div className="text-xl font-bold text-primary">R$ {minicourse.price.toFixed(2)}</div>
                             <div className="text-[9px] text-slate-500 mt-2 font-semibold uppercase tracking-wider">Liberação Instantânea</div>
                           </Label>
                         </div>

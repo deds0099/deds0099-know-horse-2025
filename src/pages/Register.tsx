@@ -180,7 +180,7 @@ const Register = () => {
       console.log('Inscrição salva:', registration.id);
 
       // 3. Obter o preço
-      const price = 5;
+      const price = paymentMethod === 'pix' ? 200 : 220;
       const activeLot = getActiveLotFromList(priceLots);
       const title = activeLot ? `Inscrição ${activeLot.label} - Know Horse 2026` : 'Inscrição Regular - Know Horse 2026';
 
@@ -377,7 +377,7 @@ const Register = () => {
                                 {paymentMethod === 'pix' && <div className="h-2.5 w-2.5 rounded-full bg-primary" />}
                               </div>
                             </div>
-                            <div className="text-3xl font-black text-primary tracking-tight">R$ 5,00</div>
+                            <div className="text-3xl font-black text-primary tracking-tight">R$ 200,00</div>
                             <div className="text-[10px] text-slate-500 mt-3 font-semibold uppercase tracking-wider bg-slate-100 px-2 py-1 rounded">Liberação Instantânea</div>
                           </Label>
                         </div>
@@ -393,7 +393,7 @@ const Register = () => {
                                 {paymentMethod === 'card' && <div className="h-2.5 w-2.5 rounded-full bg-primary" />}
                               </div>
                             </div>
-                            <div className="text-3xl font-black text-primary tracking-tight">R$ 5,00</div>
+                            <div className="text-3xl font-black text-primary tracking-tight">R$ 200,00</div>
                             <div className="text-[10px] text-slate-500 mt-3 font-semibold uppercase tracking-wider bg-slate-100 px-2 py-1 rounded">Até 12x no Cartão</div>
                           </Label>
                         </div>
