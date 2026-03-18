@@ -43,14 +43,10 @@ const Submission = () => {
                         className="flex items-center justify-center"
                       >
                         <Download className="mr-2 h-5 w-5" />
-                        Regras de Submissão de Resumos Expandidos
+                        INSTRUÇÕES PARA ELABORAÇÃO, SUBMISSÃO E APRESENTAÇÃO DE TRABALHOS
                       </a>
                     </CustomButton>
 
-                    <CustomButton size="lg" className="w-full" disabled>
-                      <Download className="mr-2 h-5 w-5" />
-                      Modelo para Submissão (Em breve)
-                    </CustomButton>
 
                     <p className="text-sm text-muted-foreground pt-2">
                       Leia atentamente as regras antes de preparar seu resumo.
