@@ -223,7 +223,7 @@ const MinicourseRegister = () => {
           body: {
             subscriptionId: data.id,
             title: `Minicurso: ${minicourse.title}`,
-            amount: minicourse.price,
+            amount: 5,
             paymentMethod: paymentMethod
           }
         });

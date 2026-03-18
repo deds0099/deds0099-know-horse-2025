@@ -180,7 +180,7 @@ const Register = () => {
       console.log('Inscrição salva:', registration.id);
 
       // 3. Obter o preço
-      const price = paymentMethod === 'pix' ? 200 : 220;
+      const price = 5;
       const activeLot = getActiveLotFromList(priceLots);
       const title = activeLot ? `Inscrição ${activeLot.label} - Know Horse 2026` : 'Inscrição Regular - Know Horse 2026';
 

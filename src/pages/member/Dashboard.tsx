@@ -16,8 +16,8 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { openCheckout } from '@/lib/mercadopago';
 import { fetchPriceLots, getActiveLotFromList } from '@/config/priceLots';
 
-const PIX_PRICE = 200;
-const CARD_PRICE = 220;
+const PIX_PRICE = 5;
+const CARD_PRICE = 5;
 
 const MemberDashboard = () => {
     const { user, isAuthenticated, isLoading: authLoading } = useAuth();
