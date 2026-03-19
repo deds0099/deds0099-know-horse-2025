@@ -138,11 +138,7 @@ export const Navbar: React.FC = () => {
                     <Link to="/member/dashboard">Minha Área</Link>
                   </Button>
                 )}
-                {user?.isAdmin && (
-                  <Button className="w-full justify-between" variant="outline" onClick={() => navigate('/admin/settings')}>
-                    Configurações <ArrowRight className="h-4 w-4" />
-                  </Button>
-                )}
+
                 <Button
                   onClick={handleLogout}
                   variant="ghost"
