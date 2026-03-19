@@ -93,9 +93,11 @@ export const Navbar: React.FC = () => {
     <header
       className={cn(
         'fixed top-0 left-0 right-0 w-full z-50 transition-all duration-300',
-        isScrolled
-          ? 'bg-white/80 backdrop-blur-md shadow-sm py-2'
-          : 'bg-transparent py-4'
+        isMenuOpen
+          ? 'bg-white shadow-md py-2'
+          : isScrolled
+            ? 'bg-white/80 backdrop-blur-md shadow-sm py-2'
+            : 'bg-transparent py-4'
       )}
     >
       <div className="container mx-auto px-4 md:px-6">
@@ -163,7 +165,7 @@ export const Navbar: React.FC = () => {
           {/* Mobile Menu Button */}
           <button
             onClick={toggleMenu}
-            className="md:hidden p-2 rounded-md text-foreground hover:bg-accent/50 focus:outline-none"
+            className="md:hidden p-2 rounded-md text-foreground hover:bg-accent/50 focus:outline-none relative z-[70]"
             aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
           >
             {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
@@ -173,7 +175,7 @@ export const Navbar: React.FC = () => {
 
       {/* Mobile Navigation */}
       {isMenuOpen && (
-        <div className="md:hidden fixed inset-0 z-50 bg-background pt-16 animate-fade-in">
+        <div className="md:hidden fixed inset-0 z-[60] bg-white opacity-100 pt-24 animate-fade-in overflow-y-auto">
           <div className="container mx-auto px-4 py-6 flex flex-col space-y-4">
             {getLinks().map((link) => (
               <Link

@@ -35,15 +35,15 @@ const Submission = () => {
                   </p>
 
                   <div className="flex flex-col gap-4 items-center mt-8">
-                    <CustomButton asChild size="lg" className="w-full">
+                    <CustomButton asChild size="lg" className="w-full h-auto py-4 text-center leading-tight">
                       <a
                         href="https://drive.google.com/file/d/10GNdaQG_aafjN807_eolPzKYiynHt9Kb/view?usp=drive_link"
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center justify-center"
+                        className="flex items-center justify-center text-center"
                       >
-                        <Download className="mr-2 h-5 w-5" />
-                        INSTRUÇÕES PARA ELABORAÇÃO, SUBMISSÃO E APRESENTAÇÃO DE TRABALHOS
+                        <Download className="mr-2 h-5 w-5 shrink-0" />
+                        <span>INSTRUÇÕES PARA ELABORAÇÃO, SUBMISSÃO E APRESENTAÇÃO DE TRABALHOS</span>
                       </a>
                     </CustomButton>
 
