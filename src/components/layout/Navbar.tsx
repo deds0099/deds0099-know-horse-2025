@@ -49,10 +49,13 @@ export const Navbar: React.FC = () => {
   ];
 
   const memberLinks = [
-    { name: 'Minha Área', path: '/member/dashboard' },
+    { name: 'Início', path: '/' },
     { name: 'Notícias', path: '/news' },
     { name: 'Programação', path: '/schedule' },
     { name: 'Minicursos', path: '/minicourses' },
+    { name: 'Submissão', path: '/submission' },
+    { name: 'Inscrição', path: '/register' },
+    { name: 'Minha Área', path: '/member/dashboard' },
   ];
 
   const getLinks = () => {
@@ -205,7 +208,7 @@ export const Navbar: React.FC = () => {
                 className="w-full mt-4 animate-slide-in"
                 style={{ animationDelay: '200ms' }}
               >
-                <Link to="/login">Admin</Link>
+                <Link to="/login">Entrar</Link>
               </Button>
             )}
           </div>
