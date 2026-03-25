@@ -103,7 +103,6 @@ const Register = () => {
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
-  const [paymentMethod, setPaymentMethod] = useState<'pix' | 'card'>('pix');
   const [priceLots, setPriceLots] = useState<PriceLot[]>([]);
   const [isLoadingPrices, setIsLoadingPrices] = useState(true);
 
@@ -180,33 +179,15 @@ const Register = () => {
       console.log('Inscrição salva:', registration.id);
 
       // 3. Obter o preço
-      const price = paymentMethod === 'pix' ? 200 : 220;
       const activeLot = getActiveLotFromList(priceLots);
       const title = activeLot ? `Inscrição ${activeLot.label} - Know Horse 2026` : 'Inscrição Regular - Know Horse 2026';
 
-      // 4. Gerar preferência do Mercado Pago
-      const preference = await createPreference(
-        registration.id,
-        formData.email,
-        formData.name,
-        price,
-        title,
-        formData.cpf,
-        paymentMethod
-      );
+      toast.success('Inscrição realizada com sucesso! Redirecionando para sua área...');
 
-      toast.success('Inscrição realizada com sucesso! Redirecionando para o pagamento...');
-
-      // 5. Redirecionar para o checkout do Mercado Pago
-      if (preference && (preference.preference_id || preference.init_point)) {
-        if (preference.preference_id) {
-          openCheckout(preference.preference_id);
-        } else {
-          window.location.href = preference.init_point;
-        }
-      } else {
-        throw new Error('Link de pagamento não gerado.');
-      }
+      // 5. Redirecionar para o Dashboard do Membro
+      setTimeout(() => {
+        navigate('/member/dashboard');
+      }, 2000);
 
     } catch (error: any) {
       console.error('Erro completo no cadastro:', error);
@@ -358,47 +339,6 @@ const Register = () => {
                       />
                     </div>
 
-                    <div className="space-y-4 pt-6 border-t">
-                      <Label className="text-base font-bold">Forma de Pagamento</Label>
-                      <RadioGroup
-                        defaultValue="pix"
-                        onValueChange={(v) => setPaymentMethod(v as 'pix' | 'card')}
-                        className="grid grid-cols-1 sm:grid-cols-2 gap-4"
-                      >
-                        <div>
-                          <RadioGroupItem value="pix" id="pix" className="peer sr-only" />
-                          <Label
-                            htmlFor="pix"
-                            className="flex flex-col items-center justify-between rounded-xl border-2 border-muted bg-white p-4 hover:bg-slate-50 peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/5 [&:has([data-state=checked])]:border-primary cursor-pointer h-full transition-all"
-                          >
-                            <div className="flex items-center justify-between w-full mb-3">
-                              <span className="font-bold text-slate-700">PIX</span>
-                              <div className={`h-5 w-5 rounded-full border-2 flex items-center justify-center ${paymentMethod === 'pix' ? 'border-primary' : 'border-slate-300'}`}>
-                                {paymentMethod === 'pix' && <div className="h-2.5 w-2.5 rounded-full bg-primary" />}
-                              </div>
-                            </div>
-                            <div className="text-3xl font-black text-primary tracking-tight">R$ 200,00</div>
-                            <div className="text-[10px] text-slate-500 mt-3 font-semibold uppercase tracking-wider bg-slate-100 px-2 py-1 rounded">Liberação Instantânea</div>
-                          </Label>
-                        </div>
-                        <div>
-                          <RadioGroupItem value="card" id="card" className="peer sr-only" />
-                          <Label
-                            htmlFor="card"
-                            className="flex flex-col items-center justify-between rounded-xl border-2 border-muted bg-white p-4 hover:bg-slate-50 peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/5 [&:has([data-state=checked])]:border-primary cursor-pointer h-full transition-all"
-                          >
-                            <div className="flex items-center justify-between w-full mb-3">
-                              <span className="font-bold text-slate-700">Cartão</span>
-                              <div className={`h-5 w-5 rounded-full border-2 flex items-center justify-center ${paymentMethod === 'card' ? 'border-primary' : 'border-slate-300'}`}>
-                                {paymentMethod === 'card' && <div className="h-2.5 w-2.5 rounded-full bg-primary" />}
-                              </div>
-                            </div>
-                            <div className="text-3xl font-black text-primary tracking-tight">R$ 220,00</div>
-                            <div className="text-[10px] text-slate-500 mt-3 font-semibold uppercase tracking-wider bg-slate-100 px-2 py-1 rounded">Até 12x no Cartão</div>
-                          </Label>
-                        </div>
-                      </RadioGroup>
-                    </div>
                   </CardContent>
                   <CardFooter>
                     <Button

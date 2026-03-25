@@ -159,18 +159,23 @@ const MemberDashboard = () => {
         }
     }, [searchParams, navigate]);
 
-    const openPaymentDialog = (item: { id: string; title: string; price: number }) => {
+    const openPaymentDialog = (item: { id: string; title: string; price: number; isPromo?: boolean }) => {
         setPendingPaymentItem(item);
-        setPaymentDialogOpen(true);
+        if (item.isPromo) {
+            handlePayment('pix', item.price, item.title);
+        } else {
+            setPaymentDialogOpen(true);
+        }
     };
 
-    const handlePayment = async (paymentMethod: 'pix' | 'card') => {
+    const handlePayment = async (paymentMethod: 'pix' | 'card', customAmount?: number, customTitle?: string) => {
         if (!pendingPaymentItem) return;
         setPaymentDialogOpen(false);
         
-        // Se for inscrição regular, usa os preços fixos. Se for minicurso, usa o preço do item.
-        let amount = pendingPaymentItem.price;
-        if (pendingPaymentItem.title.includes('Inscrição Regular')) {
+        let amount = customAmount || pendingPaymentItem.price;
+        let title = customTitle || pendingPaymentItem.title;
+
+        if (!customAmount && pendingPaymentItem.title.includes('Inscrição Regular')) {
             amount = paymentMethod === 'pix' ? PIX_PRICE : CARD_PRICE;
         }
         
@@ -179,9 +184,11 @@ const MemberDashboard = () => {
             const { data, error } = await supabase.functions.invoke('mercadopago-preference', {
                 body: {
                     subscriptionId: pendingPaymentItem.id,
-                    title: pendingPaymentItem.title,
+                    title,
                     amount,
-                    paymentMethod
+                    paymentMethod,
+                    email: user?.email, // Passando e-mail para pré-preencher no MP
+                    name: user?.full_name || ''
                 }
             });
 
@@ -279,18 +286,34 @@ const MemberDashboard = () => {
                                                 {subscription.is_paid ? 'Pagamento Confirmado' : 'Aguardando Pagamento'}
                                             </Badge>
                                             {!subscription.is_paid && (
-                                                <Button
-                                                    size="sm"
-                                                    className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700"
-                                                    onClick={() => openPaymentDialog({
-                                                        id: subscription.id,
-                                                        title: `Inscrição Regular - Know Horse 2026`,
-                                                        price: PIX_PRICE // Base decimal para PIX
-                                                    })}
-                                                >
-                                                    <CreditCard size={16} className="mr-2" />
-                                                    Pagar Agora
-                                                </Button>
+                                                <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+                                                    <Button
+                                                        size="sm"
+                                                        variant="outline"
+                                                        className="w-full sm:w-auto border-primary text-primary hover:bg-primary/5"
+                                                        onClick={() => openPaymentDialog({
+                                                            id: subscription.id,
+                                                            title: `Inscrição Regular - Know Horse 2026`,
+                                                            price: PIX_PRICE
+                                                        })}
+                                                    >
+                                                        <CreditCard size={16} className="mr-2" />
+                                                        Lote Regular
+                                                    </Button>
+                                                    <Button
+                                                        size="sm"
+                                                        className="w-full sm:w-auto bg-green-600 hover:bg-green-700"
+                                                        onClick={() => openPaymentDialog({
+                                                            id: subscription.id,
+                                                            title: `Lote PROMOCIONAL - Know Horse 2026`,
+                                                            price: 150,
+                                                            isPromo: true
+                                                        })}
+                                                    >
+                                                        <QrCode size={16} className="mr-2" />
+                                                        Lote Promocional (R$ 150)
+                                                    </Button>
+                                                </div>
                                             )}
                                         </div>
                                     </div>
