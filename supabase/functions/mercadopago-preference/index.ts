@@ -70,7 +70,7 @@ serve(async (req) => {
             items: [
                 {
                     title: String(title || "Inscrição Know Horse 2026"),
-                    unit_price: Number(amount || 150),
+                    unit_price: Number(amount || 180),
                     quantity: 1,
                     currency_id: 'BRL'
                 }

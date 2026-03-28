@@ -67,7 +67,7 @@ const Index = () => {
 
             <div className="mt-10 max-w-md mx-auto">
               <img
-                src="https://i.ibb.co/bjW2V4hc/Lote-Promocional-feed.png"
+                src="https://i.ibb.co/bg2QTJMN/Logo-Know-Horse-2026-feed-1.png"
                 alt="Banner Know Horse 2026"
                 className="w-full h-auto rounded-lg shadow-lg mx-auto animate-fade-in"
                 style={{ animationDelay: '300ms' }}

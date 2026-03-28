@@ -41,7 +41,7 @@ async function test() {
                 subscriptionId: 'test-1234-5678',
                 email: 'test_mp_invoke@exemplo.com',
                 name: 'João Teste',
-                price: 150,
+                price: 180,
                 cpf: '12345678909',
                 title: 'Teste'
             })

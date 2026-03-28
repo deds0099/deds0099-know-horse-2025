@@ -306,12 +306,12 @@ const MemberDashboard = () => {
                                                         onClick={() => openPaymentDialog({
                                                             id: subscription.id,
                                                             title: `Lote PROMOCIONAL - Know Horse 2026`,
-                                                            price: 150,
+                                                            price: 180,
                                                             isPromo: true
                                                         })}
                                                     >
                                                         <QrCode size={16} className="mr-2" />
-                                                        Lote Promocional (R$ 150)
+                                                        Lote Promocional (R$ 180)
                                                     </Button>
                                                 </div>
                                             )}

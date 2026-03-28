@@ -12,7 +12,7 @@ if (!mpAccessToken) {
 
 const subscriptionId = 'test-sub-123';
 const title = 'Test Subscription';
-const amount = 150;
+const amount = 180;
 const baseUrl = 'https://know-horse-2025.vercel.app';
 
 const preferenceBody = {
