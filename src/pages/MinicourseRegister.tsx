@@ -50,7 +50,7 @@ const MinicourseRegister = () => {
   const [minicourse, setMinicourse] = useState<Minicourse | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [paymentMethod, setPaymentMethod] = useState<'pix' | 'card'>('pix');
+  const paymentMethod = 'pix';
   const [formData, setFormData] = useState({
     name: authUser?.full_name || '',
     email: authUser?.email || '',
@@ -223,8 +223,8 @@ const MinicourseRegister = () => {
           body: {
             subscriptionId: data.id,
             title: `Minicurso: ${minicourse.title}`,
-            amount: 5,
-            paymentMethod: paymentMethod
+            amount: 70,
+            paymentMethod: 'pix'
           }
         });
 
@@ -500,44 +500,16 @@ const MinicourseRegister = () => {
 
                     <div className="space-y-4 pt-6 border-t mb-6">
                       <Label className="text-base font-bold">Forma de Pagamento</Label>
-                      <RadioGroup
-                        defaultValue="pix"
-                        onValueChange={(v) => setPaymentMethod(v as 'pix' | 'card')}
-                        className="grid grid-cols-1 sm:grid-cols-2 gap-4"
-                      >
-                        <div>
-                          <RadioGroupItem value="pix" id="mini-pix" className="peer sr-only" />
-                          <Label
-                            htmlFor="mini-pix"
-                            className="flex flex-col items-center justify-between rounded-xl border-2 border-muted bg-white p-4 hover:bg-slate-50 peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/5 [&:has([data-state=checked])]:border-primary cursor-pointer h-full transition-all"
-                          >
-                            <div className="flex items-center justify-between w-full mb-2">
-                              <span className="font-bold text-slate-700">PIX</span>
-                              <div className={`h-4 w-4 rounded-full border-2 flex items-center justify-center ${paymentMethod === 'pix' ? 'border-primary' : 'border-slate-300'}`}>
-                                {paymentMethod === 'pix' && <div className="h-2 w-2 rounded-full bg-primary" />}
-                              </div>
-                            </div>
-                            <div className="text-xl font-bold text-primary">R$ {minicourse.price.toFixed(2)}</div>
-                            <div className="text-[9px] text-slate-500 mt-2 font-semibold uppercase tracking-wider">Liberação Instantânea</div>
-                          </Label>
+                      <div className="flex flex-col items-center justify-between rounded-xl border-2 border-primary bg-primary/5 p-4 w-full">
+                        <div className="flex items-center justify-between w-full mb-2">
+                          <span className="font-bold text-slate-700">PIX</span>
+                          <div className="h-4 w-4 rounded-full border-2 border-primary flex items-center justify-center">
+                            <div className="h-2 w-2 rounded-full bg-primary" />
+                          </div>
                         </div>
-                        <div>
-                          <RadioGroupItem value="card" id="mini-card" className="peer sr-only" />
-                          <Label
-                            htmlFor="mini-card"
-                            className="flex flex-col items-center justify-between rounded-xl border-2 border-muted bg-white p-4 hover:bg-slate-50 peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/5 [&:has([data-state=checked])]:border-primary cursor-pointer h-full transition-all"
-                          >
-                            <div className="flex items-center justify-between w-full mb-2">
-                              <span className="font-bold text-slate-700">Cartão</span>
-                              <div className={`h-4 w-4 rounded-full border-2 flex items-center justify-center ${paymentMethod === 'card' ? 'border-primary' : 'border-slate-300'}`}>
-                                {paymentMethod === 'card' && <div className="h-2 w-2 rounded-full bg-primary" />}
-                              </div>
-                            </div>
-                            <div className="text-xl font-bold text-primary">R$ {minicourse.price.toFixed(2)}</div>
-                            <div className="text-[9px] text-slate-500 mt-2 font-semibold uppercase tracking-wider">Até 12x no Cartão</div>
-                          </Label>
-                        </div>
-                      </RadioGroup>
+                        <div className="text-xl font-bold text-primary">R$ 70,00</div>
+                        <div className="text-[9px] text-slate-500 mt-2 font-semibold uppercase tracking-wider">Liberação Instantânea</div>
+                      </div>
                     </div>
 
                     <Button
