@@ -222,57 +222,50 @@ const MinicourseRegistrations = () => {
     }
 
     try {
-      // Primeiro, buscar o minicurso para obter o número atual de vagas
-      const { data: minicourse, error: minicourseError } = await supabase
+      // 1. Buscar total fixo de vagas do minicurso
+      const { data: minicourseData, error: minicourseError } = await supabase
         .from('minicourses')
-        .select('vacancies, vacancies_left')
+        .select('vacancies')
         .eq('id', registration.minicourse_id)
         .single();
 
-      if (minicourseError) {
-        console.error('Erro ao buscar minicurso:', minicourseError);
-        throw new Error(`Erro ao buscar minicurso: ${minicourseError.message}`);
-      }
-
-      if (!minicourse) {
+      if (minicourseError || !minicourseData) {
         throw new Error('Minicurso não encontrado');
       }
 
-      // Remover a inscrição
+      // 2. Remover a inscrição
       const { error: deleteError } = await supabase
         .from('minicourse_registrations')
         .delete()
         .eq('id', registration.id);
 
       if (deleteError) {
-        console.error('Erro ao remover inscrição:', deleteError);
         throw new Error(`Erro ao remover inscrição: ${deleteError.message}`);
       }
 
-      // Só devolve a vaga se a inscrição NÃO estava paga
-      // (inscrições pagas confirmaram presença, a vaga foi consumida)
-      if (!registration.is_paid) {
-        // Garante que nunca ultrapassa o total de vagas
-        const newVacanciesLeft = Math.min(
-          minicourse.vacancies_left + 1,
-          minicourse.vacancies
-        );
+      // 3. Contar inscrições restantes diretamente no banco
+      const { count, error: countError } = await supabase
+        .from('minicourse_registrations')
+        .select('*', { count: 'exact', head: true })
+        .eq('minicourse_id', registration.minicourse_id);
 
-        const { error: updateError } = await supabase
+      if (countError) {
+        console.error('Erro ao contar inscrições:', countError);
+      } else {
+        // 4. Recalcular: vagas_disponíveis = total_fixo - inscrições_existentes
+        const newVacanciesLeft = minicourseData.vacancies - (count ?? 0);
+
+        await supabase
           .from('minicourses')
-          .update({ 
-            vacancies_left: newVacanciesLeft,
+          .update({
+            vacancies_left: Math.max(0, newVacanciesLeft),
             updated_at: new Date().toISOString()
           })
           .eq('id', registration.minicourse_id);
-          
-        if (updateError) {
-          console.error('Erro ao atualizar vagas disponíveis:', updateError);
-        }
       }
 
       toast.success('Inscrição excluída com sucesso');
-      fetchData(); // Atualizar dados
+      fetchData();
     } catch (error: any) {
       console.error('Erro ao excluir inscrição:', error);
       toast.error('Erro ao excluir inscrição');

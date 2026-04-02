@@ -210,20 +210,32 @@ const MinicourseRegister = () => {
         throw error;
       }
 
-      // Atualizar o número de vagas disponíveis
-      const { error: updateError } = await supabase
-        .from('minicourses')
-        .update({
-          vacancies_left: currentMinicourse.vacancies_left - 1,
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', id);
+      // Recalcular vagas: total_fixo - quantidade_real_de_inscrições
+      const { count, error: countError } = await supabase
+        .from('minicourse_registrations')
+        .select('*', { count: 'exact', head: true })
+        .eq('minicourse_id', id);
 
-      if (updateError) {
-        console.error('Erro ao atualizar vagas:', updateError);
-        // Não lançar erro para não prejudicar a experiência do usuário
-        // A vaga será corrigida pelo admin depois
+      if (!countError) {
+        const { data: minicourseInfo } = await supabase
+          .from('minicourses')
+          .select('vacancies')
+          .eq('id', id)
+          .single();
+
+        if (minicourseInfo) {
+          const newVacanciesLeft = Math.max(0, minicourseInfo.vacancies - (count ?? 0));
+          await supabase
+            .from('minicourses')
+            .update({
+              vacancies_left: newVacanciesLeft,
+              updated_at: new Date().toISOString()
+            })
+            .eq('id', id);
+        }
       }
+
+
 
       // Gerar preferência de pagamento dinâmica
       try {
