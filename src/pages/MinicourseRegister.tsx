@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
-import { ArrowLeft, CalendarClock, Users, MapPin, User, Tag, Info } from 'lucide-react';
+import { ArrowLeft, CalendarClock, Users, MapPin, User, Tag, Info, AlertTriangle, X } from 'lucide-react';
 import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -51,6 +51,8 @@ const MinicourseRegister = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const paymentMethod = 'pix';
+  const [showWarningModal, setShowWarningModal] = useState(true);
+  const [warningAcknowledged, setWarningAcknowledged] = useState(false);
   const [formData, setFormData] = useState({
     name: authUser?.full_name || '',
     email: authUser?.email || '',
@@ -131,6 +133,12 @@ const MinicourseRegister = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Mostrar modal de aviso se ainda não foi confirmado
+    if (!warningAcknowledged) {
+      setShowWarningModal(true);
+      return;
+    }
 
     if (!minicourse || !id) {
       toast.error('Erro ao identificar o minicurso');
@@ -302,6 +310,58 @@ const MinicourseRegister = () => {
     <div className="min-h-screen flex flex-col">
       <Navbar />
 
+      {/* Modal de aviso */}
+      {showWarningModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm px-4">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 relative animate-in fade-in zoom-in-95">
+            <button
+              onClick={() => setShowWarningModal(false)}
+              className="absolute top-3 right-3 text-gray-400 hover:text-gray-600 transition-colors"
+              aria-label="Fechar"
+            >
+              <X className="h-5 w-5" />
+            </button>
+
+            <div className="flex items-center gap-3 mb-4">
+              <div className="bg-amber-100 rounded-full p-2">
+                <AlertTriangle className="h-6 w-6 text-amber-500" />
+              </div>
+              <h2 className="text-lg font-bold text-gray-800">Atenção importante!</h2>
+            </div>
+
+            <p className="text-gray-700 mb-3">
+              Todos os minicursos acontecem no <strong>mesmo dia e horário</strong>.
+            </p>
+            <p className="text-gray-700 mb-5">
+              Você só pode se inscrever em <strong>um único minicurso</strong>. Após confirmar a inscrição e realizar o pagamento, <strong>não será possível trocar</strong>.
+            </p>
+
+            <div className="flex flex-col gap-2">
+              <button
+                onClick={() => {
+                  setWarningAcknowledged(true);
+                  setShowWarningModal(false);
+                  // Submete o formulário automaticamente após confirmar
+                  setTimeout(() => {
+                    const form = document.getElementById('minicourse-form') as HTMLFormElement;
+                    form?.requestSubmit();
+                  }, 100);
+                }}
+                className="w-full bg-primary text-white font-semibold py-2.5 rounded-lg hover:bg-primary/90 transition-colors"
+              >
+                Entendi, quero continuar
+              </button>
+              <button
+                onClick={() => setShowWarningModal(false)}
+                className="w-full border border-gray-300 text-gray-600 font-medium py-2.5 rounded-lg hover:bg-gray-50 transition-colors"
+              >
+                Voltar e revisar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <main className="flex-1 pt-28 pb-16">
         <div className="container mx-auto px-4 md:px-6">
           <Button
@@ -311,6 +371,17 @@ const MinicourseRegister = () => {
           >
             <ArrowLeft className="mr-2 h-4 w-4" /> Voltar para Minicursos
           </Button>
+
+          {/* Aviso importante */}
+          <div className="flex items-start gap-3 bg-amber-50 border border-amber-300 rounded-xl p-4 shadow-sm mb-6">
+            <AlertTriangle className="h-6 w-6 text-amber-500 flex-shrink-0 mt-0.5" />
+            <div className="text-amber-800">
+              <p className="font-bold text-base">Inscrição em apenas 1 minicurso</p>
+              <p className="text-sm mt-1">
+                Todos os minicursos acontecem no <strong>mesmo dia e horário</strong>. Você só pode se inscrever em <strong>um minicurso</strong>. Escolha com cuidado antes de confirmar!
+              </p>
+            </div>
+          </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {/* Detalhes do Minicurso */}
@@ -431,7 +502,7 @@ const MinicourseRegister = () => {
                   <CardDescription>Preencha seus dados para se inscrever no minicurso</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <form onSubmit={handleSubmit} className="space-y-6">
+                  <form id="minicourse-form" onSubmit={handleSubmit} className="space-y-6">
                     <div className="space-y-4">
                       <div>
                         <Label htmlFor="name" className="required-field">Nome Completo</Label>

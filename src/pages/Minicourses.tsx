@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
-import { Search, CalendarClock, Users, MapPin, User, Tag } from 'lucide-react';
+import { Search, CalendarClock, Users, MapPin, User, Tag, AlertTriangle } from 'lucide-react';
 import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
 import { Button } from '@/components/ui/button';
@@ -82,11 +82,22 @@ const MinicourseList = () => {
 
       <main className="flex-1 pt-28 pb-16">
         <div className="container mx-auto px-4 md:px-6">
-          <div className="text-center mb-12">
+          <div className="text-center mb-8">
             <h1 className="text-4xl font-bold mb-4">Minicursos Disponíveis</h1>
-            <p className="text-xl text-muted-foreground text-center max-w-3xl mx-auto animate-slide-in mb-12" style={{ animationDelay: '100ms' }}>
+            <p className="text-xl text-muted-foreground text-center max-w-3xl mx-auto animate-slide-in" style={{ animationDelay: '100ms' }}>
               Participe de cursos práticos e teóricos com especialistas durante o Congresso Equestre 2026.
             </p>
+          </div>
+
+          {/* Aviso importante */}
+          <div className="max-w-3xl mx-auto mb-10 flex items-start gap-3 bg-amber-50 border border-amber-300 rounded-xl p-4 shadow-sm">
+            <AlertTriangle className="h-6 w-6 text-amber-500 flex-shrink-0 mt-0.5" />
+            <div className="text-amber-800">
+              <p className="font-bold text-base">Atenção: inscrição em apenas 1 minicurso</p>
+              <p className="text-sm mt-1">
+                Todos os minicursos acontecem no <strong>mesmo dia e horário</strong>. Por isso, cada participante pode se inscrever em <strong>somente um minicurso</strong>. Escolha com cuidado!
+              </p>
+            </div>
           </div>
 
           <div className="max-w-3xl mx-auto mb-10">
