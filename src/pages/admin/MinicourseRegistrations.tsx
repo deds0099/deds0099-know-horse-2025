@@ -225,7 +225,7 @@ const MinicourseRegistrations = () => {
       // Primeiro, buscar o minicurso para obter o número atual de vagas
       const { data: minicourse, error: minicourseError } = await supabase
         .from('minicourses')
-        .select('vacancies_left')
+        .select('vacancies, vacancies_left')
         .eq('id', registration.minicourse_id)
         .single();
 
@@ -252,10 +252,16 @@ const MinicourseRegistrations = () => {
       // Só devolve a vaga se a inscrição NÃO estava paga
       // (inscrições pagas confirmaram presença, a vaga foi consumida)
       if (!registration.is_paid) {
+        // Garante que nunca ultrapassa o total de vagas
+        const newVacanciesLeft = Math.min(
+          minicourse.vacancies_left + 1,
+          minicourse.vacancies
+        );
+
         const { error: updateError } = await supabase
           .from('minicourses')
           .update({ 
-            vacancies_left: minicourse.vacancies_left + 1,
+            vacancies_left: newVacanciesLeft,
             updated_at: new Date().toISOString()
           })
           .eq('id', registration.minicourse_id);
