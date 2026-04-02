@@ -28,8 +28,8 @@ const MinicourseForm = () => {
     location: '',
     date: 'A definir',
     time: 'A definir',
-    vacancies: 0,
-    vacancies_left: 0,
+    vacancies: 1,
+    vacancies_left: 1,
     type: '',
     theme: '',
     price: 0,
@@ -98,7 +98,7 @@ const MinicourseForm = () => {
       setFormData(prev => ({ ...prev, [name]: parseFloat(value) || 0 }));
     } else if (name === 'vacancies' || name === 'vacancies_left') {
       // If it's a new minicourse, keep vacancies_left in sync with vacancies
-      const numValue = parseInt(value) || 0;
+      const numValue = parseInt(value) || 1;
       if (name === 'vacancies' && !isEditMode) {
         setFormData(prev => ({ 
           ...prev, 

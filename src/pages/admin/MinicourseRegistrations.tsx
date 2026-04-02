@@ -249,18 +249,20 @@ const MinicourseRegistrations = () => {
         throw new Error(`Erro ao remover inscrição: ${deleteError.message}`);
       }
 
-      // Atualizar o número de vagas disponíveis
-      const { error: updateError } = await supabase
-        .from('minicourses')
-        .update({ 
-          vacancies_left: minicourse.vacancies_left + 1,
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', registration.minicourse_id);
-        
-      if (updateError) {
-        console.error('Erro ao atualizar vagas disponíveis:', updateError);
-        // Continuar mesmo com erro para não prejudicar a experiência do usuário
+      // Só devolve a vaga se a inscrição NÃO estava paga
+      // (inscrições pagas confirmaram presença, a vaga foi consumida)
+      if (!registration.is_paid) {
+        const { error: updateError } = await supabase
+          .from('minicourses')
+          .update({ 
+            vacancies_left: minicourse.vacancies_left + 1,
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', registration.minicourse_id);
+          
+        if (updateError) {
+          console.error('Erro ao atualizar vagas disponíveis:', updateError);
+        }
       }
 
       toast.success('Inscrição excluída com sucesso');
