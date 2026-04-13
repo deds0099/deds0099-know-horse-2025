@@ -54,7 +54,6 @@ export const Navbar: React.FC = () => {
     { name: 'Programação', path: '/schedule' },
     { name: 'Minicursos', path: '/minicourses' },
     { name: 'Submissão', path: '/submission' },
-    { name: 'Inscrição', path: '/register' },
     { name: 'Minha Área', path: '/member/dashboard' },
   ];
 
