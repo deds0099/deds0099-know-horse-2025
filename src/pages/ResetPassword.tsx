@@ -20,8 +20,18 @@ const ResetPassword = () => {
   const [isSuccess, setIsSuccess] = useState(false);
 
   useEffect(() => {
-    // Verificar se estamos em uma sessão de recuperação de senha
+    // Escutar evento de recuperação de senha do Supabase
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'PASSWORD_RECOVERY') {
+        // Sessão de recuperação de senha detectada - manter na página
+        console.log('Password recovery session detected');
+      }
+    });
+
+    // Verificar se já existe sessão (tokens podem já ter sido processados)
     const checkSession = async () => {
+      // Aguardar um momento para o Supabase processar os tokens do hash da URL
+      await new Promise(resolve => setTimeout(resolve, 1000));
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) {
         toast.error('Sessão expirada ou inválida. Solicite um novo link.');
@@ -30,6 +40,10 @@ const ResetPassword = () => {
     };
     
     checkSession();
+
+    return () => {
+      subscription.unsubscribe();
+    };
   }, [navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
