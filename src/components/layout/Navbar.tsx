@@ -136,12 +136,6 @@ export const Navbar: React.FC = () => {
 
             {isAuthenticated ? (
               <div className="flex items-center gap-2">
-                {!user?.isAdmin && location.pathname !== '/member/dashboard' && (
-                  <Button asChild variant="outline" size="sm">
-                    <Link to="/member/dashboard">Minha Área</Link>
-                  </Button>
-                )}
-
                 <Button
                   onClick={handleLogout}
                   variant="ghost"
