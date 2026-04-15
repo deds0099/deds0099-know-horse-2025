@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, FileText, Download } from 'lucide-react';
+import { ArrowRight, FileText, Download, Presentation } from 'lucide-react';
 import { CustomButton } from '@/components/ui/CustomButton';
 import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
@@ -46,6 +46,32 @@ const Submission = () => {
                         <span>INSTRUÇÕES PARA ELABORAÇÃO, SUBMISSÃO E APRESENTAÇÃO DE TRABALHOS</span>
                       </a>
                     </CustomButton>
+
+                    <div className="flex flex-col gap-4 w-full">
+                      <CustomButton asChild variant="outline" className="h-auto py-4 text-center leading-tight">
+                        <a
+                          href="https://docs.google.com/document/d/1b-vjv15n6kzRfh4bexGYOEAtVjxpz7fJ/edit?usp=drive_link&ouid=113940076839864563911&rtpof=true&sd=true"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center justify-center text-center"
+                        >
+                          <FileText className="mr-2 h-5 w-5 shrink-0" />
+                          <span>MODELO DE RESUMO EXPANDIDO</span>
+                        </a>
+                      </CustomButton>
+
+                      <CustomButton asChild variant="outline" className="h-auto py-4 text-center leading-tight">
+                        <a
+                          href="https://docs.google.com/presentation/d/1VfIW5_ASpwei285hZ5_VbzvN9Jk4Bp9X/edit?usp=drive_link&ouid=113940076839864563911&rtpof=true&sd=true"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center justify-center text-center"
+                        >
+                          <Presentation className="mr-2 h-5 w-5 shrink-0" />
+                          <span>MODELO DE APRESENTAÇÃO</span>
+                        </a>
+                      </CustomButton>
+                    </div>
 
 
                     <p className="text-sm text-muted-foreground pt-2">
