@@ -50,7 +50,7 @@ const Submission = () => {
                     <div className="flex flex-col gap-4 w-full">
                       <CustomButton asChild size="lg" className="w-full h-auto py-4 text-center leading-tight">
                         <a
-                          href="https://docs.google.com/document/d/1b-vjv15n6kzRfh4bexGYOEAtVjxpz7fJ/edit?usp=drive_link&ouid=113940076839864563911&rtpof=true&sd=true"
+                          href="https://docs.google.com/document/d/1b-vjv15n6kzRfh4bexGYOEAtVjxpz7fJ/edit?usp=sharing&ouid=113940076839864563911&rtpof=true&sd=true"
                           target="_blank"
                           rel="noopener noreferrer"
                           className="flex items-center justify-center text-center"
@@ -62,7 +62,7 @@ const Submission = () => {
 
                       <CustomButton asChild size="lg" className="w-full h-auto py-4 text-center leading-tight">
                         <a
-                          href="https://docs.google.com/presentation/d/1VfIW5_ASpwei285hZ5_VbzvN9Jk4Bp9X/edit?usp=drive_link&ouid=113940076839864563911&rtpof=true&sd=true"
+                          href="https://docs.google.com/presentation/d/1VfIW5_ASpwei285hZ5_VbzvN9Jk4Bp9X/edit?usp=sharing&ouid=113940076839864563911&rtpof=true&sd=true"
                           target="_blank"
                           rel="noopener noreferrer"
                           className="flex items-center justify-center text-center"
