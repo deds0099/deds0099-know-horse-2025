@@ -342,10 +342,10 @@ const MinicourseRegister = () => {
             </div>
 
             <p className="text-gray-700 mb-3">
-              Todos os minicursos acontecem no <strong>mesmo dia e horário</strong>.
+              Confira atentamente a <strong>data e o horário</strong> do minicurso para evitar conflitos de agenda.
             </p>
             <p className="text-gray-700 mb-5">
-              Você só pode se inscrever em <strong>um único minicurso</strong>. Após confirmar a inscrição e realizar o pagamento, <strong>não será possível trocar</strong>.
+              Após confirmar a inscrição e realizar o pagamento, <strong>não será possível trocar</strong> de minicurso.
             </p>
 
             <div className="flex flex-col gap-2">
@@ -388,9 +388,9 @@ const MinicourseRegister = () => {
           <div className="flex items-start gap-3 bg-amber-50 border border-amber-300 rounded-xl p-4 shadow-sm mb-6">
             <AlertTriangle className="h-6 w-6 text-amber-500 flex-shrink-0 mt-0.5" />
             <div className="text-amber-800">
-              <p className="font-bold text-base">Inscrição em apenas 1 minicurso</p>
+              <p className="font-bold text-base">Atenção aos horários!</p>
               <p className="text-sm mt-1">
-                Todos os minicursos acontecem no <strong>mesmo dia e horário</strong>. Você só pode se inscrever em <strong>um minicurso</strong>. Escolha com cuidado antes de confirmar!
+                Confira atentamente a <strong>data e o horário</strong> de cada minicurso para evitar conflitos de agenda. Escolha com cuidado, pois não será possível realizar trocas após a confirmação.
               </p>
             </div>
           </div>

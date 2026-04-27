@@ -93,9 +93,9 @@ const MinicourseList = () => {
           <div className="max-w-3xl mx-auto mb-10 flex items-start gap-3 bg-amber-50 border border-amber-300 rounded-xl p-4 shadow-sm">
             <AlertTriangle className="h-6 w-6 text-amber-500 flex-shrink-0 mt-0.5" />
             <div className="text-amber-800">
-              <p className="font-bold text-base">Atenção: inscrição em apenas 1 minicurso</p>
+              <p className="font-bold text-base">Atenção aos horários!</p>
               <p className="text-sm mt-1">
-                Todos os minicursos acontecem no <strong>mesmo dia e horário</strong>. Por isso, cada participante pode se inscrever em <strong>somente um minicurso</strong>. Escolha com cuidado!
+                Confira atentamente a <strong>data e o horário</strong> de cada minicurso para evitar conflitos de agenda. Escolha com cuidado, pois não será possível realizar trocas após a confirmação.
               </p>
             </div>
           </div>
