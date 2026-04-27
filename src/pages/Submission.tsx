@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, FileText, Download, Presentation } from 'lucide-react';
+import { ArrowRight, FileText, Download, Presentation, CheckCircle } from 'lucide-react';
 import { CustomButton } from '@/components/ui/CustomButton';
 import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
@@ -69,6 +69,18 @@ const Submission = () => {
                         >
                           <Presentation className="mr-2 h-5 w-5 shrink-0" />
                           <span>MODELO DE APRESENTAÇÃO</span>
+                        </a>
+                      </CustomButton>
+
+                      <CustomButton asChild size="lg" className="w-full h-auto py-4 text-center leading-tight bg-green-600 hover:bg-green-700 text-white border-none">
+                        <a
+                          href="https://drive.google.com/file/d/13GZTwnnqgz_6tPb9fBNSs0BBjBRVSZPG/view"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center justify-center text-center"
+                        >
+                          <CheckCircle className="mr-2 h-5 w-5 shrink-0" />
+                          <span>LISTA DE TRABALHOS APROVADOS</span>
                         </a>
                       </CustomButton>
                     </div>
