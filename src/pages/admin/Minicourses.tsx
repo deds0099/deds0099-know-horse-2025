@@ -76,6 +76,27 @@ const AdminMinicourses = () => {
     }
   };
 
+  const handleToggleSoldOut = async (minicourse: Minicourse) => {
+    try {
+      const newSoldOutState = !minicourse.is_sold_out;
+      const { error } = await supabase
+        .from('minicourses')
+        .update({
+          is_sold_out: newSoldOutState,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', minicourse.id);
+
+      if (error) throw error;
+
+      toast.success(`Minicurso marcado como ${newSoldOutState ? 'Esgotado' : 'Disponível'}!`);
+      fetchMinicourses(); // Refresh the list
+    } catch (error: any) {
+      console.error('Erro ao alterar status de esgotado:', error);
+      toast.error(error.message || 'Erro ao alterar status de esgotado');
+    }
+  };
+
   const handleDelete = async (minicourse: Minicourse) => {
     if (!window.confirm('Tem certeza que deseja excluir este minicurso? Esta ação não pode ser desfeita.')) {
       return;
@@ -213,15 +234,27 @@ const AdminMinicourses = () => {
                       </div>
                     </div>
                     <div className="flex flex-col md:flex-row items-end gap-2">
-                      <div className="flex items-center space-x-2">
-                        <Switch
-                          id={`publish-${item.id}`}
-                          checked={item.is_published}
-                          onCheckedChange={() => handleTogglePublish(item)}
-                        />
-                        <Label htmlFor={`publish-${item.id}`}>
-                          {item.is_published ? 'Publicado' : 'Rascunho'}
-                        </Label>
+                      <div className="flex flex-col space-y-2">
+                        <div className="flex items-center space-x-2">
+                          <Switch
+                            id={`publish-${item.id}`}
+                            checked={item.is_published}
+                            onCheckedChange={() => handleTogglePublish(item)}
+                          />
+                          <Label htmlFor={`publish-${item.id}`}>
+                            {item.is_published ? 'Publicado' : 'Rascunho'}
+                          </Label>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <Switch
+                            id={`sold-out-${item.id}`}
+                            checked={item.is_sold_out}
+                            onCheckedChange={() => handleToggleSoldOut(item)}
+                          />
+                          <Label htmlFor={`sold-out-${item.id}`}>
+                            {item.is_sold_out ? 'Esgotado' : 'Disponível'}
+                          </Label>
+                        </div>
                       </div>
                       <div className="flex gap-2">
                         <Button

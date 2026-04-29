@@ -26,7 +26,6 @@ const MinicourseList = () => {
           .from('minicourses')
           .select('*')
           .eq('is_published', true)
-          .gt('vacancies_left', 0)
           .order('created_at', { ascending: false });
 
         if (error) {
@@ -142,10 +141,16 @@ const MinicourseList = () => {
                         target.src = '/placeholder-minicourse.jpg';
                       }}
                     />
-                    <div className="absolute top-1 right-1">
-                      <Badge variant="secondary" className="bg-white/90 text-black text-xs px-2 py-0.5">
-                        {item.vacancies_left} vagas
-                      </Badge>
+                    <div className="absolute top-1 right-1 flex flex-col gap-1 items-end">
+                      {item.is_sold_out ? (
+                        <Badge variant="destructive" className="text-xs px-2 py-0.5">
+                          Esgotado
+                        </Badge>
+                      ) : (
+                        <Badge variant="secondary" className="bg-white/90 text-black text-xs px-2 py-0.5">
+                          {item.vacancies_left} vagas
+                        </Badge>
+                      )}
                     </div>
                   </div>
                   <CardContent className="p-4 flex-grow flex flex-col">
@@ -199,11 +204,17 @@ const MinicourseList = () => {
                           currency: 'BRL',
                         })}
                       </span>
-                      <Button asChild size="sm">
-                        <Link to={`/minicourses/register/${item.id}`}>
-                          Inscrever-se
-                        </Link>
-                      </Button>
+                      {item.is_sold_out ? (
+                        <Button disabled size="sm" variant="outline">
+                          Esgotado
+                        </Button>
+                      ) : (
+                        <Button asChild size="sm">
+                          <Link to={`/minicourses/register/${item.id}`}>
+                            Inscrever-se
+                          </Link>
+                        </Button>
+                      )}
                     </div>
                   </CardContent>
                 </Card>

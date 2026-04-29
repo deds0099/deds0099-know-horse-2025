@@ -63,6 +63,7 @@ export interface Minicourse {
   price: number;
   image_url?: string | null;
   is_published: boolean;
+  is_sold_out?: boolean;
   created_at: string;
   updated_at: string;
   published_at: string | null;

@@ -35,6 +35,7 @@ const MinicourseForm = () => {
     price: 0,
     image_url: '',
     is_published: false,
+    is_sold_out: false,
     instructor_photo_url: '',
   });
 
@@ -115,6 +116,10 @@ const MinicourseForm = () => {
 
   const handleToggleChange = (checked: boolean) => {
     setFormData(prev => ({ ...prev, is_published: checked }));
+  };
+
+  const handleToggleSoldOut = (checked: boolean) => {
+    setFormData(prev => ({ ...prev, is_sold_out: checked }));
   };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -486,15 +491,28 @@ const MinicourseForm = () => {
                     )}
                   </div>
 
-                  <div className="flex items-center space-x-2">
-                    <Switch
-                      id="is_published"
-                      checked={formData.is_published}
-                      onCheckedChange={handleToggleChange}
-                    />
-                    <Label htmlFor="is_published">
-                      {formData.is_published ? 'Publicado' : 'Rascunho'}
-                    </Label>
+                  <div className="flex flex-col md:flex-row gap-6">
+                    <div className="flex items-center space-x-2">
+                      <Switch
+                        id="is_published"
+                        checked={formData.is_published}
+                        onCheckedChange={handleToggleChange}
+                      />
+                      <Label htmlFor="is_published">
+                        {formData.is_published ? 'Publicado' : 'Rascunho'}
+                      </Label>
+                    </div>
+
+                    <div className="flex items-center space-x-2">
+                      <Switch
+                        id="is_sold_out"
+                        checked={formData.is_sold_out}
+                        onCheckedChange={handleToggleSoldOut}
+                      />
+                      <Label htmlFor="is_sold_out">
+                        {formData.is_sold_out ? 'Esgotado' : 'Vagas Disponíveis'}
+                      </Label>
+                    </div>
                   </div>
                 </div>
 

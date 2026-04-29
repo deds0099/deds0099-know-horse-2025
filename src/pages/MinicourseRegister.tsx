@@ -90,7 +90,6 @@ const MinicourseRegister = () => {
           .select('*')
           .eq('id', id)
           .eq('is_published', true)
-          .gt('vacancies_left', 0)
           .single();
 
         if (error) {
@@ -100,6 +99,12 @@ const MinicourseRegister = () => {
 
         if (!data) {
           toast.error('Minicurso não encontrado ou indisponível');
+          navigate('/minicourses');
+          return;
+        }
+
+        if (data.is_sold_out) {
+          toast.error('Este minicurso já está esgotado');
           navigate('/minicourses');
           return;
         }
@@ -142,6 +147,11 @@ const MinicourseRegister = () => {
 
     if (!minicourse || !id) {
       toast.error('Erro ao identificar o minicurso');
+      return;
+    }
+
+    if (minicourse.is_sold_out) {
+      toast.error('Inscrições encerradas: este minicurso está esgotado');
       return;
     }
 

@@ -74,7 +74,7 @@ const Submission = () => {
 
                       <CustomButton asChild size="lg" className="w-full h-auto py-4 text-center leading-tight bg-green-600 hover:bg-green-700 text-white border-none">
                         <a
-                          href="https://drive.google.com/file/d/13GZTwnnqgz_6tPb9fBNSs0BBjBRVSZPG/view"
+                          href="https://drive.google.com/file/d/1M_y3JdGefgQ1pP_QmeA3xrHh8rsRd3Rf/view?usp=drive_link"
                           target="_blank"
                           rel="noopener noreferrer"
                           className="flex items-center justify-center text-center"
@@ -89,6 +89,12 @@ const Submission = () => {
                     <p className="text-sm text-muted-foreground pt-2">
                       Leia atentamente as regras antes de preparar seu resumo.
                     </p>
+
+                    <div className="bg-primary/5 p-4 rounded-lg border border-primary/20 w-full text-center my-4">
+                      <p className="text-primary font-bold text-lg">
+                        Tamanho do Banner: Medidas 90x120cm
+                      </p>
+                    </div>
 
                     <div className="pt-6 border-t border-border w-full space-y-4">
                       <div className="flex flex-col space-y-1">
